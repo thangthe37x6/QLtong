@@ -1,0 +1,116 @@
+<div class="md:pl-64">
+  <!-- Tiêu đề -->
+  <div class="  top-0 z-10 text-center py-6">
+    <h1 class="text-2xl font-bold">
+      PHÂN XE
+    </h1>
+  </div>
+
+  <!-- Nội dung -->
+  <main class="p-6">
+    <div class="max-w-4xl mx-auto  p-6 ">
+      <form action="/PC" method="POST" class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
+        <div class="mb-4">
+          <label class="block font-semibold">Chọn ngày tổ chức:</label>
+          <select id="ngayToChuc" class="border rounded p-2 w-full">
+            <option value="">-- Chọn ngày --</option>
+            <% uniqueDates.forEach(date=> { %>
+              <option value="<%= date %>">
+                <%= date %>
+              </option>
+              <% }) %>
+          </select>
+        </div>
+
+        
+        <div class="mb-4 ">
+          <label class="block font-semibold">Chọn hội nghị:</label>
+          <select name="idHoiNghi" id="tenHoiNghi" class="border rounded p-2 w-full" required disabled>
+            <option value="">-- Chọn hội nghị --</option>
+          </select>
+        </div>
+        <!-- Chọn xe -->
+        <div class="mb-4" >
+          <label for="vehicleSelect" class="block font-medium mb-1">Chọn xe</label>
+          <select name="xe" id="vehicleSelect" class="w-full border rounded-xl p-2" required>
+            <option value="" disabled selected>-- Chọn xe --</option>
+            <option value="Bộ phận xe 1">Bộ phận xe 1</option>
+            <option value="Bộ phận xe 1">Bộ phận xe 2</option>
+          </select>
+        </div>
+        <!-- Nút xác nhận -->
+        <div class="pt-4 text-center" >
+          <button type="submit" 
+            class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-200 shadow-md" >
+            Xác nhận
+          </button>
+        </div>
+      </form>
+      <div id="bangHoiNghi" class="mt-10 hidden">
+        <h3 class="text-lg font-bold mb-3">Danh sách hội nghị trong ngày</h3>
+        <div class="overflow-x-auto rounded-2xl shadow-md border border-gray-300">
+          <table class="w-full text-left bg-white overflow-hidden rounded-2xl">
+            <thead class="bg-gray-100 text-gray-700">
+              <tr>
+                <th class="p-3">Tên hội nghị</th>
+                <th class="p-3">ngày tổ chức</th>
+                <th class="p-3">Huyện</th>
+                <th class="p-3">Địa điểm</th>
+                <th class="p-3">Loại hình</th>
+                <th class="p-3">Nhóm phụ trách</th>
+                <th class="p-3">Xe phụ trách</th>
+              </tr>
+            </thead>
+            <tbody id="bodyHoiNghi" class="text-sm divide-y divide-gray-200 text-center">
+              <!-- Dữ liệu render từ JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+
+<script>
+  const ngayToChuc = document.getElementById('ngayToChuc');
+  const tenHoiNghi = document.getElementById('tenHoiNghi');
+  const bangHoiNghi = document.getElementById('bangHoiNghi');
+  const bodyHoiNghi = document.getElementById('bodyHoiNghi');
+
+  ngayToChuc.addEventListener('change', async () => {
+    const date = ngayToChuc.value;
+    if (!date) return;
+
+    const res = await fetch(`/api/PC?date=${encodeURIComponent(date)}`);
+    const data = await res.json();
+
+    // Cập nhật dropdown hội nghị
+    tenHoiNghi.innerHTML = `<option value="">-- Chọn hội nghị --</option>`;
+    data.forEach(item => {
+      tenHoiNghi.innerHTML += `<option value="${item._id}">${item.tenHoiNghi}</option>`;
+    });
+    tenHoiNghi.disabled = false;
+
+    // Cập nhật bảng bên dưới
+    if (data.length > 0) {
+      bangHoiNghi.classList.remove('hidden');
+      bodyHoiNghi.innerHTML = '';
+      data.forEach(item => {
+        bodyHoiNghi.innerHTML += `
+          <tr class="border-t">
+            <td class="p-2">${item.tenHoiNghi}</td>
+            <td class="p-2">${item.ngayToChuc}</td>
+            <td class="p-2">${item.huyenToChuc}</td>
+            <td class="p-2">${item.diaDiem}</td>
+            <td class="p-2">${item.loaiHinh}</td>
+            <td class="p-2">${item.nhomPhuTrach}</td>
+            <td class="p-2">${item.PC || ''}</td>
+          </tr>
+        `;
+      });
+    } else {
+      bangHoiNghi.classList.add('hidden');
+    }
+  });
+</script>

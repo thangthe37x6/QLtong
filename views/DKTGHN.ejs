@@ -1,0 +1,171 @@
+<div class="md:pl-64">
+  <!-- Tiêu đề -->
+  <div class="top-0 z-10 text-center py-6">
+    <h1 class="text-2xl font-bold">ĐĂNG KÝ THAM GIA HN</h1>
+  </div>
+  <!-- Nội dung -->
+  <main class="p-6">
+    <div class="max-w-4xl mx-auto p-6">
+      <form action="/DKTGHN" method="POST"
+        class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
+        <div class="mb-4">
+          <label class="block font-semibold">Chọn ngày tổ chức:</label>
+          <select id="ngayToChuc" class="border rounded p-2 w-full">
+            <option value="">-- Chọn ngày --</option>
+            <% uniqueDates.forEach(date=> { %>
+              <option value="<%= date %>">
+                <%= date %>
+              </option>
+              <% }) %>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label class="block font-semibold">Chọn hội nghị:</label>
+          <select name="idHoiNghi" id="hoiNghiSelect" class="border rounded p-2 w-full" required disabled>
+            <option value="">-- Chọn hội nghị --</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <div id="infoSection" class="mt-6 hidden border p-4 rounded bg-gray-100">
+            <p><strong>Tên HN:</strong> <span id="tenHoiNghi"></span></p>
+            <p><strong>Nhóm phụ trách:</strong> <span id="nhomPhuTrach"></span></p>
+            <p><strong>Địa điểm:</strong> <span id="diaDiem"></span></p>
+            <p><strong>Loai hình:</strong> <span id="loaiHinh"></span></p>
+            <p><strong>Ngay tổ chức:</strong> <span id="ngayToChuc"></span></p>
+            <p><strong>Bộ phận xe:</strong> <span id="PC"></span></p>
+
+          </div>
+        </div>
+        <!-- Nút xác nhận -->
+        <div class="pt-4 text-center">
+          <button type="submit"
+            class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-200 shadow-md">
+            Xác nhận
+          </button>
+        </div>
+      </form>
+
+      <!-- Bảng hiển thị hội nghị đã đăng ký -->
+      <div id="bangHoiNghi" class="mt-10 hidden">
+        <h3 class="text-lg font-bold mb-3">Danh sách hội nghị bạn đã đăng ký trong ngày</h3>
+        <div class="overflow-x-auto rounded-2xl shadow-md border border-gray-300">
+          <table class="w-full text-left bg-white overflow-hidden rounded-2xl">
+            <thead class="bg-gray-100 text-gray-700">
+              <tr>
+                <th class="p-3 text-center">Tên hội nghị</th>
+                <th class="p-3 text-center">Ngày tổ chức</th>
+                <th class="p-3 text-center">Huyện</th>
+                <th class="p-3  text-center">Địa điểm</th>
+                <th class="p-3 text-center">Loại hình</th>
+                <th class="p-3 text-center">Nhóm phụ trách</th>
+                <th class="p-3 text-center">Xe phụ trách</th>
+                <th class="p-3 text-center">Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="bodyHoiNghi" class="text-sm divide-y divide-gray-200 text-center">
+              <!-- Dữ liệu từ JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  const ngayToChuc = document.getElementById('ngayToChuc');
+  const hoiNghiSelect = document.getElementById('hoiNghiSelect');
+  const bangHoiNghi = document.getElementById('bangHoiNghi');
+  const bodyHoiNghi = document.getElementById('bodyHoiNghi');
+  const infoSection = document.getElementById('infoSection');
+
+  // Hàm tải danh sách hội nghị theo ngày
+  async function loadConferencesByDate(date) {
+    const resConferences = await fetch(`/api/DKTGHN?date=${encodeURIComponent(date)}`);
+    const conferences = await resConferences.json();
+
+    hoiNghiSelect.innerHTML = `<option value="">-- Chọn hội nghị --</option>`;
+    conferences.forEach(item => {
+      hoiNghiSelect.innerHTML += `<option value="${item._id}">${item.tenHoiNghi}</option>`;
+    });
+    hoiNghiSelect.disabled = false;
+  }
+
+  // ✅ Hàm hiển thị các hội nghị đã đăng ký (KHÔNG phụ thuộc ngày)
+  async function showRegisteredConferences() {
+    const resRegistered = await fetch(`/api/user-conferences`);
+    const registered = await resRegistered.json();
+
+    if (registered.length > 0) {
+      bangHoiNghi.classList.remove('hidden');
+      bodyHoiNghi.innerHTML = '';
+      registered.forEach(item => {
+        bodyHoiNghi.innerHTML += `
+          <tr class="border-t">
+            <td class="p-2">${item.detailHN.tenHoiNghi}</td>
+            <td class="p-2">${item.detailHN.ngayToChuc}</td>
+            <td class="p-2">${item.detailHN.huyenToChuc}</td>
+            <td class="p-2">${item.detailHN.diaDiem}</td>
+            <td class="p-2">${item.detailHN.loaiHinh}</td>
+            <td class="p-2">${item.detailHN.nhomPhuTrach}</td>
+            <td class="p-2">${item.detailHN.PC || ''}</td>
+            <td class="p-3 text-center">
+             <button onclick="xoaHoiNghi('${item._id}')" class="text-red-600 hover:text-red-800 text-xl">xóa</button>
+
+          </td>
+          </tr>
+        `;
+      });
+    } else {
+      bangHoiNghi.classList.add('hidden');
+    }
+  }
+
+  // Sự kiện thay đổi ngày => chỉ gọi loadConferencesByDate
+  ngayToChuc.addEventListener('change', async () => {
+    const date = ngayToChuc.value;
+    if (!date) return;
+    await loadConferencesByDate(date);
+  });
+  hoiNghiSelect.addEventListener('change', async () => {
+    const id = hoiNghiSelect.value;
+    if (!id) return infoSection.classList.add('hidden');
+    const res = await fetch(`/api/DKTGHN/${id}`);
+    const info = await res.json();
+
+    tenHoiNghi.textContent = info.tenHoiNghi;
+    diaDiem.textContent = info.huyenToChuc + "," + info.diaDiem;
+    nhomPhuTrach.textContent = info.nhomPhuTrach;
+    loaiHinh.textContent = info.ngayToChuc;
+    PC.textContent = info.PC;
+    infoSection.classList.remove('hidden');
+  })
+
+  async function xoaHoiNghi(id) {
+    console.log("📌 ID gửi đi:", id);
+    const confirmed = confirm('Bạn có chắc chắn muốn xóa?');
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`/DKTGHN/delete/${id}`, {
+        method: 'POST',
+      });
+
+      if (res.ok) {
+        alert('Đã xóa thành công');
+        showRegisteredConferences(); // Cập nhật lại danh sách sau khi xóa
+      } else {
+        const data = await res.json();
+        alert('Lỗi khi xóa: ' + (data.error || 'Không rõ'));
+      }
+    } catch (err) {
+      console.error('Lỗi fetch khi xóa:', err);
+      alert('Lỗi kết nối máy chủ');
+    }
+  }
+  // Gọi showRegisteredConferences ngay khi trang load (hoặc lúc bạn cần)
+  document.addEventListener('DOMContentLoaded', () => {
+    showRegisteredConferences();
+  });
+</script>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hệ Thống Đăng ký và Quản Lý Hội Nghị</title>
+  <link href="/styles/output.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+  <!-- Toggle button -->
+  <button id="menu-toggle" class="md:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded shadow-md focus:outline-none">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+
+  <!-- Sidebar -->
+  <div id="sidebar"
+    class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 flex flex-col">
+    <div class="p-4 border-b font-bold text-lg"><%= username %></div>
+    <nav class="flex-1 overflow-y-auto">
+      <% if (role==='admin' ) {%>
+        <a href="/DKHN" class="block px-4 py-3 hover:bg-blue-100 ">Đăng
+          ký & quản lý HN</a>
+        <a href="/PC" class="block px-4 py-3 hover:bg-blue-100 ">Phân
+          xe</a>
+        <a href="/BCKQ" class="block px-4 py-3 hover:bg-blue-100 ">Báo
+          cáo kết quả</a>
+        <a href="/KT" class="block px-4 py-3 hover:bg-blue-100 ">Kiểm
+          tra</a>
+        <a href="/TK" class="block px-4 py-3 hover:bg-blue-100 ">Thống
+          kê</a>
+        <% } else { %>
+          <a href="/DKTGHN" class="block px-4 py-3 hover:bg-blue-100 ">Đăng ký tham gia HN</a>
+          <a href="/KTPC" class="block px-4 py-3 hover:bg-blue-100 ">Kiểm tra xe đã phân công</a>
+          <%} %>
+
+    </nav>
+    <div class="p-4 border-t">
+      <form action="/logout" method="POST">
+      <button class="text-red-600 hover:underline">Đăng xuất</button>
+      </form>
+    </div>
+  </div>
+
+
+  <%- body %>
+
+    <!-- Script -->
+    <script>
+      const toggle = document.getElementById('menu-toggle');
+      const sidebar = document.getElementById('sidebar');
+      toggle.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+      });
+
+      sidebar.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth < 768) {
+            sidebar.classList.add('-translate-x-full');
+          }
+        });
+      });
+    </script>
+
+</body>
+
+</html>

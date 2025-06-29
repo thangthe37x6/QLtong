@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập</title>
+  <link rel="stylesheet" href="/styles/output.css">
+</head>
+<body>
+  <div class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center mb-6">đăng nhập</h2>
+    <% if (message) { %>
+      <p class="text-center text-red-500 mb-4"><%= message %></p>
+    <% } %>
+    <form action="/login" method="POST">
+      <div class="mb-4">
+        <label for="username" class="block text-sm font-medium text-gray-700">tên đăng nhập</label>
+        <input type="text" id="username" name="username" required class="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <div class="mb-4">
+        <label for="password" class="block text-sm font-medium text-gray-700">mật khẩu</label>
+        <input type="password" id="password" name="password" required class="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Login</button>
+    </form>
+    <p class="text-center mt-4">Bạn đã có tài khoản chưa? <a href="/register" class="text-blue-500 hover:underline">Đăng ký</a></p>
+    <p class="text-center mt-4">bạn quên mật khẩu rồi! <a href="/forgot" class="text-blue-500 hover:underline">Quên mật khẩu</a></p>
+  </div>
+</div>
+
+</body>
+</html>

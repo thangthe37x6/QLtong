@@ -1,0 +1,133 @@
+<div class="md:pl-64">
+    <!-- Tiêu đề -->
+    <div class="  top-0 z-10 text-center py-6">
+        <h1 class="text-2xl font-bold">
+            BÁO CÁO KẾT QUẢ
+        </h1>
+    </div>
+
+    <!-- Nội dung -->
+    <main class="p-6">
+        <div class="max-w-4xl mx-auto  p-6 ">
+            <form action="/BCKQ" method="POST" enctype="multipart/form-data"
+                class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
+                <div class="mb-4">
+                    <label>Chọn ngày tổ chức:</label>
+                    <select id="ngayToChuc" class="border p-2 rounded w-full">
+                        <option value="">-- Chọn ngày --</option>
+                        <% uniqueDates.forEach(d=> { %>
+                            <option value="<%= d %>">
+                                <%= d %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
+
+
+                <div class="mb-4">
+                    <label class="mt-4">Chọn hội nghị:</label>
+                    <select name="idHoiNghi" id="hoiNghiSelect" class="border p-2 rounded w-full" disabled required>
+                        <option value="">-- Chọn hội nghị --</option>
+                    </select>
+                </div>
+                <!-- Chọn xe -->
+                <div class="mb-4">
+                    <div id="infoSection" class="mt-6 hidden border p-4 rounded bg-gray-100">
+                        <p><strong>Tên HN:</strong> <span id="tenHoiNghi"></span></p>
+                        <p><strong>Nhóm phụ trách:</strong> <span id="nhomPhuTrach"></span></p>
+                        <p><strong>Địa điểm:</strong> <span id="diaDiem"></span></p>
+                        <p><strong>Loai hình:</strong> <span id="loaiHinh"></span></p>
+                        <p><strong>Ngay tổ chức:</strong> <span id="ngayToChuc"></span></p>
+                        <p><strong>Bộ phận xe:</strong> <span id="PC"></span></p>
+                        
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mt-4 font-semibold">Số lượng người tham dự:</label>
+                    <input type="number" name="soLuongThamDu" class="border p-2 rounded w-full"  />
+                </div>
+                <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Ảnh danh sách người tham dự -->
+                    <div>
+                        <label class="block mb-2 font-semibold">Ảnh danh sách người tham dự:</label>
+                        <input type="file" name="anhDanhSach" accept="image/*" class="w-full border rounded p-2" 
+                           />
+                    </div>
+
+                    <!-- Ảnh tổng thể hội nghị -->
+                    <div>
+                        <label class="block mb-2 font-semibold">Ảnh tổng thể hội nghị:</label>
+                        <input type="file" name="anhTongThe" accept="image/*" class="w-full border rounded p-2"
+                             />
+                    </div>
+                </div>
+                <!-- Nút xác nhận -->
+                <div class="pt-4 text-center">
+                    <button type="submit"
+                        class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-200 shadow-md">
+                        Xác nhận
+                    </button>
+                </div>
+            </form>
+            <div id="bangHoiNghi" class="mt-10 hidden">
+                <h3 class="text-lg font-bold mb-3">Danh sách hội nghị trong ngày</h3>
+                <div class="overflow-x-auto rounded-2xl shadow-md border border-gray-300">
+                    <table class="w-full text-left bg-white overflow-hidden rounded-2xl">
+                        <thead class="bg-gray-100 text-gray-700">
+                            <tr>
+                                <th class="p-3">Tên hội nghị</th>
+                                <th class="p-3">Huyện</th>
+                                <th class="p-3">Địa điểm</th>
+                                <th class="p-3">Nhóm phụ trách</th>
+                                <th class="p-3">Xe phụ trách</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bodyHoiNghi" class="text-sm divide-y divide-gray-200">
+                            <!-- Dữ liệu render từ JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+
+<script>
+    const ngayToChuc = document.getElementById('ngayToChuc');
+    const hoiNghiSelect = document.getElementById('hoiNghiSelect');
+    const infoSection = document.getElementById('infoSection');
+    const tenHoiNghi = document.getElementById('tenHoiNghi');
+    const diaDiem = document.getElementById('diaDiem');
+    const nhomPhuTrach = document.getElementById('nhomPhuTrach');
+    const loaiHinh = document.getElementById('loaiHinh');
+    const PC = document.getElementById('PC');
+    const huyenToChuc = document.getElementById('huyenToChuc');
+
+    ngayToChuc.addEventListener('change', async () => {
+        const res = await fetch(`/api/BCKQ?date=${ngayToChuc.value}`);
+        const data = await res.json();
+
+        hoiNghiSelect.innerHTML = `<option value="">-- Chọn hội nghị --</option>`;
+        data.forEach(hn => {
+            hoiNghiSelect.innerHTML += `<option value="${hn._id}">${hn.tenHoiNghi}</option>`;
+        });
+        hoiNghiSelect.disabled = false;
+    });
+
+    hoiNghiSelect.addEventListener('change', async () => {
+        const id = hoiNghiSelect.value;
+        if (!id) return infoSection.classList.add('hidden');
+
+        const res = await fetch(`/api/BCKQ/${id}`);
+        const info = await res.json();
+
+        tenHoiNghi.textContent = info.tenHoiNghi;
+        diaDiem.textContent = info.huyenToChuc + "," + info.diaDiem;
+        nhomPhuTrach.textContent = info.nhomPhuTrach;
+        loaiHinh.textContent = info.ngayToChuc;
+        PC.textContent = info.PC;
+        infoSection.classList.remove('hidden');
+    });
+</script>

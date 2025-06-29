@@ -1,0 +1,94 @@
+<div class="md:pl-64">
+    <!-- Tiêu đề -->
+    <div class="top-0 z-10 text-center py-6">
+      <h1 class="text-2xl font-bold">KIỂM TRA HỘI NGHỊ</h1>
+    </div>
+
+    <!-- Nội dung -->
+    <main class="p-6">
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6">
+
+          <!-- Chọn ngày -->
+          <div class="mb-4">
+            <label class="block font-semibold mb-1">Chọn ngày tổ chức:</label>
+            <select id="ngaySelect" class="border p-2 rounded-xl w-full">
+              <option value="">-- Chọn ngày --</option>
+              <% uniqueDates.forEach(date => { %>
+                <option value="<%= date %>"><%= date %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- Chọn hội nghị -->
+          <div class="mb-4">
+            <label class="block font-semibold mb-1">Chọn hội nghị:</label>
+            <select id="hoiNghiSelect" class="border p-2 rounded-xl w-full" disabled>
+              <option value="">-- Chọn hội nghị --</option>
+            </select>
+          </div>
+
+          <!-- Thông tin hiển thị -->
+          <div class="mb-4">
+            <div id="hienThi" class="hidden mt-6 space-y-6">
+              
+              <!-- Ảnh -->
+              <div class="flex flex-col md:flex-row md:space-x-6">
+                <img id="anhDanhSach" class="rounded-xl w-full md:w-1/2 object-cover shadow" />
+                <img id="anhTongThe" class="rounded-xl w-full md:w-1/2 object-cover mt-4 md:mt-0 shadow" />
+              </div>
+
+              <!-- Thông tin -->
+              <div class="bg-gray-100 p-4 rounded-xl shadow text-gray-800 space-y-2">
+                <p><strong>Tên hội nghị:</strong> <span id="tenHoiNghi"></span></p>
+                <p><strong>Địa điểm:</strong> <span id="diaDiem"></span></p>
+                <p><strong>Huyện:</strong> <span id="huyenToChuc"></span></p>
+                <p><strong>Loại hình:</strong> <span id="loaiHinh"></span></p>
+                <p><strong>Nhóm phụ trách:</strong> <span id="nhomPhuTrach"></span></p>
+                <p><strong>Số người tham dự:</strong> <span id="soLuongThamDu"></span></p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const ngaySelect = document.getElementById('ngaySelect');
+    const hoiNghiSelect = document.getElementById('hoiNghiSelect');
+    const hienThi = document.getElementById('hienThi');
+
+    ngaySelect.addEventListener('change', async () => {
+      const date = ngaySelect.value;
+      const res = await fetch(`/api/KT?date=${date}`);
+      const list = await res.json();
+
+      hoiNghiSelect.innerHTML = '<option value="">-- Chọn hội nghị --</option>';
+      list.forEach(hn => {
+        hoiNghiSelect.innerHTML += `<option value="${hn._id}">${hn.tenHoiNghi}</option>`;
+      });
+      hoiNghiSelect.disabled = false;
+      hienThi.classList.add('hidden');
+    });
+
+    hoiNghiSelect.addEventListener('change', async () => {
+      const id = hoiNghiSelect.value;
+      if (!id) return;
+
+      const res = await fetch(`/api/KT/${id}`);
+      const data = await res.json();
+
+      document.getElementById('anhDanhSach').src = `/uploads/${data.anhDanhSach || 'placeholder.jpg'}`;
+      document.getElementById('anhTongThe').src = `/uploads/${data.anhTongThe || 'placeholder.jpg'}`;
+      document.getElementById('tenHoiNghi').textContent = data.tenHoiNghi;
+      document.getElementById('diaDiem').textContent = data.diaDiem;
+      document.getElementById('huyenToChuc').textContent = data.huyenToChuc;
+      document.getElementById('loaiHinh').textContent = data.loaiHinh;
+      document.getElementById('nhomPhuTrach').textContent = data.nhomPhuTrach;
+      document.getElementById('soLuongThamDu').textContent = data.SL || '0';
+
+      hienThi.classList.remove('hidden');
+    });
+  </script>

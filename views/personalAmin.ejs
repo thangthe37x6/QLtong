@@ -1,0 +1,36 @@
+<div class="md:pl-64">
+    <!-- Tiêu đề -->
+    <div class="  top-0 z-10 text-center py-6">
+        <h1 class="text-2xl font-bold">
+            Admin Dashboard Kiểm tra đăng kí tham gia HN
+        </h1>
+    </div>
+
+    <!-- Nội dung -->
+    <main class="p-6">
+        <div class="max-w-4xl mx-auto  p-6 ">
+            <form action="/personal/export" method="POST"
+                class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
+                <div class="mb-4">
+                    <label for="startDate" class="block text-sm font-medium text-gray-700">📅 Từ ngày</label>
+                    <input type="date" id="startDate" name="startDate" required
+                        class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="endDate" class="block text-sm font-medium text-gray-700">📅 Đến ngày</label>
+                    <input type="date" id="endDate" name="endDate" required
+                        class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500" />
+                </div>
+
+                <!-- Nút xác nhận -->
+                <div class="pt-4 text-center">
+                    <button type="submit"
+                        class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-200 shadow-md">
+                        xuất file dữ liệu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>

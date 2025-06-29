@@ -1,0 +1,200 @@
+<!-- Main content -->
+<div class="md:pl-64">
+  <!-- Tiêu đề -->
+  <div class="  top-0 z-10 text-center py-6">
+    <h1 class="text-2xl font-bold">
+      ĐĂNG KÝ HỘI NGHỊ
+    </h1>
+  </div>
+
+  <!-- Nội dung -->
+  <main class="p-6">
+    <div class="max-w-4xl mx-auto  p-6 ">
+      <form action="/DKHN" method="POST" class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
+
+        <!-- Lưới 2 hàng x 3 mục -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Tên hội nghị -->
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">Tên hội nghị</label>
+            <input type="text" name="tenHoiNghi" required
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+
+          <!-- Ngày tổ chức -->
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">Ngày tổ chức</label>
+            <input type="date" name="ngayToChuc" required
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+
+          <!-- Huyện tổ chức -->
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">Huyện tổ chức</label>
+            <select name="huyenToChuc" required
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">-- Chọn huyện --</option>
+              <option value="Bình Giang">Bình Giang
+              </option>
+              <option value="Cẩm Giàng">Cẩm Giàng
+              </option>
+              <option value="Gia Lộc">Gia Lộc
+              </option>
+               <option value="Kim Thành">Kim Thành
+              </option>
+               <option value="Kinh Môn">Kinh Môn
+              </option>
+               <option value="Nam Sách">Nam Sách
+              </option>
+               <option value="Ninh Giang">Ninh Giang
+              </option>
+               <option value="Thanh Hà">Thanh Hà
+              </option>
+               <option value="Thanh Miện">Thanh Miện
+              </option>
+               <option value="Tứ Kỳ">Tứ Kỳ
+              </option>
+               <option value="Chí Linh">Chí Linh
+              </option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">Loại Hình tổ chức</label>
+            <select name="loaiHinh" required
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">-- Chọn loại hình tổ chức --</option>
+              <option value="HN Nhỏ ">HN Nhỏ 
+              </option>
+              <option value="HN Lớn">HN Lớn
+              </option>
+              <option value="Tiệc">Tiệc
+              </option>
+              <option value="Quà">Quà
+              </option>
+            </select>
+          </div>
+          <!-- Địa điểm cụ thể -->
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">Địa điểm cụ thể</label>
+            <input type="text" name="diaDiem" required
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+
+          <!-- Nhóm phụ trách -->
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">Nhóm phụ trách</label>
+            <input type="text" name="nhomPhuTrach" required
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+
+          <!-- Ô trống giữ layout -->
+          <div></div>
+        </div>
+
+        <!-- Nút xác nhận -->
+        <div class="pt-4 text-center">
+          <button type="submit"
+            class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-200 shadow-md">
+            Xác nhận
+          </button>
+        </div>
+      </form>
+      <!-- Bảng hiển thị -->
+      <div class="mt-10 max-w-6xl mx-auto">
+        <h3 class="text-xl font-bold mb-4 text-center">Quản lý danh sách hội nghị đã đăng ký</h3>
+        <div class="overflow-auto">
+          <table class="min-w-full bg-white shadow rounded-xl overflow-hidden">
+            <thead class="bg-gray-100 text-gray-700">
+              <tr>
+                <th class="p-3 text-left">STT</th>
+                <th class="p-3 text-left">Tên hội nghị</th>
+                <th class="p-3 text-left">Nhóm phụ trách</th>
+                <th class="p-3 text-left">Loại hình</th>
+                <th class="p-3 text-left">Ngày tổ chức</th>
+                 <th class="p-3 text-left">Địa điểm</th>
+                <th class="p-3 text-center">Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="conference-table" class="text-sm"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    </main>
+</div>
+<script>
+  async function fetchList() {
+    const res = await fetch('/api/DKHN');
+    const data = await res.json();
+    const tbody = document.getElementById('conference-table');
+    tbody.innerHTML = '';
+
+    data.forEach((item, index) => {
+      tbody.innerHTML += `
+        <tr class="border-b hover:bg-gray-50 transition" data-id="${item._id}">
+          <td class="p-3">${index + 1}</td>
+          ${renderEditableCell("tenHoiNghi", item.tenHoiNghi)}
+          ${renderEditableCell("nhomPhuTrach", item.nhomPhuTrach)}
+          ${renderEditableCell("loaiHinh", item.loaiHinh)}
+          ${renderEditableCell("ngayToChuc", item.ngayToChuc)}
+          ${renderEditableCell("huyenToChuc", item.huyenToChuc + "," + item.diaDiem)}
+          <td class="p-3 text-center">
+            <button onclick="deleteItem('${item._id}')" class="text-red-600 hover:text-red-800 text-xl">xóa</button>
+          </td>
+        </tr>
+      `;
+    });
+
+    addEditListeners();
+  }
+
+  function renderEditableCell(field, value) {
+    return `
+    <td class="p-3 relative">
+      <div contenteditable="true" class="editable pr-8" data-field="${field}" style="outline: none;">${value}</div>
+      <button class="save-btn hidden absolute right-1 top-1/2 -translate-y-1/2 text-green-600 hover:text-green-800 text-sm w-6 h-6 flex items-center justify-center bg-white rounded-full shadow" title="Lưu">lưu</button>
+    </td>
+  `;
+  }
+
+  function addEditListeners() {
+    document.querySelectorAll('.editable').forEach(cell => {
+      const saveBtn = cell.parentElement.querySelector('.save-btn');
+
+      cell.addEventListener('input', () => {
+        saveBtn.classList.remove('hidden');
+      });
+
+      saveBtn.addEventListener('click', async () => {
+        const row = cell.closest('tr');
+        const id = row.dataset.id;
+        const field = cell.dataset.field;
+        const value = cell.innerText.trim();
+
+        try {
+          const res = await fetch(`/DKHN/update/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [field]: value })
+          });
+
+          if (!res.ok) throw new Error("Lỗi cập nhật");
+          saveBtn.classList.add('hidden');
+          cell.classList.add('bg-green-100');
+          setTimeout(() => cell.classList.remove('bg-green-100'), 1000);
+        } catch (err) {
+          alert("❌ Cập nhật thất bại");
+          console.error(err);
+        }
+      });
+    });
+  }
+
+  async function deleteItem(id) {
+    if (!confirm("Xác nhận xoá hội nghị?")) return;
+    await fetch(`/DKHN/delete/${id}`, { method: 'POST' });
+    fetchList();
+  }
+
+  fetchList();
+</script>
