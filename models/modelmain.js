@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 
 const conferenceSchema = new mongoose.Schema({
     username: String,
-    tenHoiNghi: String,
+    buoiToChuc: String,
     ngayToChuc: String,
+    thu: String,
     huyenToChuc: String,
     diaDiem: String,
     nhomPhuTrach: String,
@@ -11,7 +12,9 @@ const conferenceSchema = new mongoose.Schema({
     SL: Number,
     anhDanhSach: String,
     anhTongThe: String,
-    PC: String
+    PC: String,
+    trangThai: String,
+    ghiChu: String
 }, { timestamps: true });
 
 const conferenceData = mongoose.model('Conference', conferenceSchema);

@@ -2,9 +2,173 @@ import express from "express";
 import { authMiddleware, requireAdmin } from "../middlewares/auth.js";
 import conferenceData from "../models/modelmain.js";
 import personalData from "../models/modelUser.js"
+import fs from 'fs'
+import path from 'path';
+import multer from "multer";
 const routerMainUser = express.Router()
 
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${Date.now()}-${file.fieldname}${ext}`);
+  }
+});
+const upload = multer({ storage });
+
+
+routerMainUser.get('/DKHN', authMiddleware, async (req, res) => {
+  try {
+    const username = req.user.username
+    const role = req.user.role
+    const data = await conferenceData.find({ username: username })
+    res.status(200).render("DKHN", { data, role: role, username: req.user.username });
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách hội nghị:', error);
+    res.status(500).json({ error: 'Không thể lấy danh sách hội nghị' });
+  }
+
+});
+
+routerMainUser.get('/api/DKHN', authMiddleware,async (req, res) => {
+  try {
+    const username = req.user.username
+    const data = await conferenceData.find({ username: username })
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Không thể lấy danh sách hội nghị' });
+  }
+});
+routerMainUser.post('/DKHN', authMiddleware,  async (req, res) => {
+  try {
+    const username = req.user.username
+    const { buoiToChuc, ngayToChuc, huyenToChuc, loaiHinh, diaDiem } = req.body
+    const N_ngay = new Date(ngayToChuc)
+    const days = ["Chủ nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+    const thu = days[N_ngay.getDay()];
+    const conference_new = new conferenceData({ username: username,thu: thu, buoiToChuc:buoiToChuc,  ngayToChuc: ngayToChuc, huyenToChuc: huyenToChuc, loaiHinh: loaiHinh, diaDiem: diaDiem})
+    await conference_new.save()
+    res.redirect("/DKHN")
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách hội nghị:', error);
+    res.status(500).json({ error: 'Không thể lấy danh sách hội nghị' });
+  }
+
+});
+// Cập nhật hội nghị theo ID
+routerMainUser.post('/DKHN/update/:id', authMiddleware, async (req, res) => {
+  try {
+    const updatedConference = await conferenceData.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedConference) {
+      return res.status(404).json({ error: 'Không tìm thấy hội nghị để cập nhật' });
+    }
+
+    res.status(200).json(updatedConference);
+  } catch (error) {
+    console.error('Lỗi khi cập nhật hội nghị:', error);
+    res.status(500).json({ error: 'Cập nhật thất bại' });
+  }
+});
+
+routerMainUser.post('/DKHN/delete/:id', authMiddleware,  async (req, res) => {
+  try {
+    // 1. Tìm hội nghị trước khi xóa
+    const conference = await conferenceData.findById(req.params.id);
+    if (!conference) {
+      return res.status(404).json({ error: 'Không tìm thấy hội nghị để xóa' });
+    }
+
+    // 2. Xóa ảnh nếu tồn tại
+    const deleteIfExists = (filename) => {
+      if (filename) {
+        const filePath = path.join('uploads', filename);
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.warn(`⚠️ Không thể xóa file ${filePath}:`, err.message);
+          } else {
+            console.log(`🗑️ Đã xóa file: ${filePath}`);
+          }
+        });
+      }
+    };
+
+    deleteIfExists(conference.anhDanhSach);
+    deleteIfExists(conference.anhTongThe);
+
+    // 3. Xóa hội nghị trong MongoDB
+    await conferenceData.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({ message: '✅ Xóa hội nghị thành công kèm ảnh' });
+  } catch (error) {
+    console.error('❌ Lỗi khi xóa hội nghị:', error);
+    res.status(500).json({ error: 'Xóa thất bại' });
+  }
+});
+
+// --------------------------------------------------------------------------------------------------------------------------
+
+routerMainUser.get("/BCKQ", authMiddleware,  (req, res) => {
+  try {
+    const role = req.user.role;
+    res.status(200).render("BCKQ", {
+      data: [], 
+      role: role,
+      username: req.user.username,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json("lỗi không tìm thấy dữ liệu");
+  }
+});
+
+routerMainUser.get('/api/BCKQ', authMiddleware, async (req, res) => {
+  try {
+    const { ngayToChuc } = req.query; // lấy từ URL query
+    if (!ngayToChuc) return res.status(400).json({ error: 'Thiếu ngày tổ chức' });
+
+    const data = await conferenceData.find({ ngayToChuc: ngayToChuc });
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Không thể lấy danh sách hội nghị' });
+  }
+});
+
+// Cập nhật hội nghị: số người, ảnh
+routerMainUser.post(
+  '/BCKQ', authMiddleware,
+  upload.fields([
+    { name: 'anhDanhSach', maxCount: 1 },
+    { name: 'anhTongThe', maxCount: 1 }
+  ]),
+  async (req, res) => {
+    const { idHoiNghi, soLuongThamDu, nhomPhuTrach } = req.body;
+    const anh1 = req.files?.['anhDanhSach']?.[0]?.filename || null;
+    const anh2 = req.files?.['anhTongThe']?.[0]?.filename || null;
+    console.log(anh1, anh2)
+    await conferenceData.findByIdAndUpdate(idHoiNghi, {
+      $set: {
+        nhomPhuTrach:nhomPhuTrach,
+        SL: Number(soLuongThamDu),
+        anhDanhSach: anh1,
+        anhTongThe: anh2
+      }
+    });
+
+    res.redirect('/BCKQ');
+  }
+);
+
+
+
+// ------------------------------------------------------------------------------------------------------------------
 routerMainUser.get('/DKTGHN', authMiddleware, async (req, res) => {
   try {
     const role = req.user.role;
@@ -96,7 +260,7 @@ routerMainUser.post('/DKTGHN/delete/:id', authMiddleware, async (req, res) => {
 });
 
 
-routerMainUser.get('/api/DKTGHN/:id', async (req, res) => {
+routerMainUser.get('/api/DKTGHN/:id',authMiddleware, async (req, res) => {
   try {
     const info = await conferenceData.findById(req.params.id);
     if (!info) res.status(401).json({ message: "không tìm thấy thông tin" })
@@ -107,31 +271,22 @@ routerMainUser.get('/api/DKTGHN/:id', async (req, res) => {
   }
 
 });
+// ----------------------------------------------------------------
 routerMainUser.get("/KTPC", authMiddleware, async (req, res) => {
-  try {
-    const role = req.user.role
-    const data = await conferenceData.find({}, "ngayToChuc")
-    const uniqueDates = [...new Set(data.map(item => item.ngayToChuc))];
-    res.status(200).render("KTPC", { uniqueDates, role: role, username: req.user.username })
-  } catch (error) {
-    console.log(error)
-    res.status(500).json("lỗi không tìm thấy dữ liệu")
-  }
-})
+  res.render("KTPC", {
+    role: req.user.role,
+    username: req.user.username,
+  });
+});
 
 routerMainUser.get("/api/KTPC", authMiddleware, async (req, res) => {
-  try {
-    const { date } = req.query;
-    const result = await conferenceData.find({ ngayToChuc: date });
-    console.log(result)
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ error: "Lỗi lấy hội nghị theo ngày" });
-  }
+  const { date } = req.query;
+  const result = await conferenceData.find({ ngayToChuc: date });
+  res.json(result);
 });
 
 
-routerMainUser.get("/personal", authMiddleware, requireAdmin, (req, res) => {
+routerMainUser.get("/personal", authMiddleware, (req, res) => {
   try {
 
     res.status(200).render('personalAmin', { message: null , username: req.user.username, role: req.user.role})
@@ -142,7 +297,7 @@ routerMainUser.get("/personal", authMiddleware, requireAdmin, (req, res) => {
   }
 })
 
-routerMainUser.post("/personal/export",authMiddleware, requireAdmin, async (req, res) => {
+routerMainUser.post("/personal/export",authMiddleware, async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const data = await personalData.find({ 'detailHN.ngayToChuc': { $gte: startDate, $lte: endDate } });

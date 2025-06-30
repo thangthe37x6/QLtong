@@ -16,14 +16,22 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Tên hội nghị -->
           <div>
-            <label class="block mb-2 font-semibold text-gray-700">Tên hội nghị</label>
-            <input type="text" name="tenHoiNghi" required
-              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <label class="block mb-2 font-semibold text-gray-700">Buổi</label>
+            <select name="buoiToChuc" required
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">-- Chọn buổi tổ chức --</option>
+              <option value="Buổi sáng">Buổi sáng
+              </option>
+              <option value="Buổi chiều">Buổi chiều
+              </option>
+              <option value="Buổi tối">Buổi tối
+              </option>
+              </select>
           </div>
 
           <!-- Ngày tổ chức -->
           <div>
-            <label class="block mb-2 font-semibold text-gray-700">Ngày tổ chức</label>
+            <label class="block mb-2 font-semibold text-gray-700">Ngày tổ chức(tháng/ngày/năm)</label>
             <input type="date" name="ngayToChuc" required
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
@@ -34,6 +42,8 @@
             <select name="huyenToChuc" required
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="">-- Chọn huyện --</option>
+              <option value="TP Hải Dương">TP Hải Dương
+              </option>
               <option value="Bình Giang">Bình Giang
               </option>
               <option value="Cẩm Giàng">Cẩm Giàng
@@ -59,18 +69,25 @@
             </select>
           </div>
           <div>
-            <label class="block mb-2 font-semibold text-gray-700">Loại Hình tổ chức</label>
+            <label class="block mb-2 font-semibold text-gray-700">Loại Hình HN</label>
             <select name="loaiHinh" required
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">-- Chọn loại hình tổ chức --</option>
-              <option value="HN Nhỏ ">HN Nhỏ 
+              <option value="">-- Chọn loại hình --</option>
+              <option value="HNCL Tiệc  ">HNCL tiệc 
               </option>
-              <option value="HN Lớn">HN Lớn
+              <option value="HNCL Quà">HNCL quà
               </option>
-              <option value="Tiệc">Tiệc
+              <option value="HN nhóm chọn">HN nhóm chọn
               </option>
-              <option value="Quà">Quà
+              <option value="HN CS-01">HN CS-01
               </option>
+                 <option value="HN CS-02">HN CS-02
+              </option>
+              <option value="HN Boss">HN boss
+              </option>
+               <option value="HN Ra Mắt">HN ra mắt
+              </option>
+            
             </select>
           </div>
           <!-- Địa điểm cụ thể -->
@@ -80,12 +97,6 @@
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
 
-          <!-- Nhóm phụ trách -->
-          <div>
-            <label class="block mb-2 font-semibold text-gray-700">Nhóm phụ trách</label>
-            <input type="text" name="nhomPhuTrach" required
-              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
 
           <!-- Ô trống giữ layout -->
           <div></div>
@@ -95,7 +106,7 @@
         <div class="pt-4 text-center">
           <button type="submit"
             class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-200 shadow-md">
-            Xác nhận
+            Đăng Ký
           </button>
         </div>
       </form>
@@ -107,10 +118,10 @@
             <thead class="bg-gray-100 text-gray-700">
               <tr>
                 <th class="p-3 text-left">STT</th>
-                <th class="p-3 text-left">Tên hội nghị</th>
-                <th class="p-3 text-left">Nhóm phụ trách</th>
+                <th class="p-3 text-left">Buổi Tổ Chức</th>
                 <th class="p-3 text-left">Loại hình</th>
                 <th class="p-3 text-left">Ngày tổ chức</th>
+                <th class="p-3 text-left">Huyện tổ chức</th>
                  <th class="p-3 text-left">Địa điểm</th>
                 <th class="p-3 text-center">Hành động</th>
               </tr>
@@ -133,11 +144,11 @@
       tbody.innerHTML += `
         <tr class="border-b hover:bg-gray-50 transition" data-id="${item._id}">
           <td class="p-3">${index + 1}</td>
-          ${renderEditableCell("tenHoiNghi", item.tenHoiNghi)}
-          ${renderEditableCell("nhomPhuTrach", item.nhomPhuTrach)}
+          ${renderEditableCell("buoiToChuc", item.buoiToChuc)}
           ${renderEditableCell("loaiHinh", item.loaiHinh)}
           ${renderEditableCell("ngayToChuc", item.ngayToChuc)}
-          ${renderEditableCell("huyenToChuc", item.huyenToChuc + "," + item.diaDiem)}
+          ${renderEditableCell("huyenToChuc", item.huyenToChuc )}
+          ${renderEditableCell("diaDiem", item.diaDiem)}
           <td class="p-3 text-center">
             <button onclick="deleteItem('${item._id}')" class="text-red-600 hover:text-red-800 text-xl">xóa</button>
           </td>

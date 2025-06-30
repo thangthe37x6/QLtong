@@ -18,6 +18,16 @@
             <label class="block font-medium mb-1">Đến ngày:</label>
             <input type="date" name="toDate" required class="w-full border border-gray-300 rounded px-3 py-2">
           </div>
+          <div>
+            <label class="block font-medium mb-1">Chọn Trạng thái HN</label>
+            <select name="trangThai" required
+              class="w-full border border-gray-300 rounded px-3 py-2">
+              <option value="">-- Trạng thái HN --</option>
+              <option value="yes">HN đã phê duyệt
+              </option><option value="no">tất cả HN
+              </option>
+              </select>
+              </div>
         </div>
         <div class="flex justify-end">
           <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Lọc</button>
@@ -25,9 +35,8 @@
       </form>
 
       <!-- Kết quả thống kê -->
-      <% if (chartData) { 
-        const maxHuyen = Object.entries(chartData.byDistrict).sort((a, b) => b[1] - a[1])[0];
-      %>
+      <% if (chartData) { const maxHuyen=Object.entries(chartData.byDistrict).sort((a, b)=> b[1] - a[1])[0];
+        %>
         <div class="grid md:grid-cols-2 gap-6 mt-10 bg-white rounded-2xl shadow-md p-6">
           <!-- Biểu đồ tròn -->
           <div>
@@ -38,7 +47,9 @@
           <!-- Huyện có nhiều hội nghị nhất -->
           <div class="flex flex-col justify-center items-center text-center">
             <h3 class="text-lg font-semibold text-green-700">Huyện tổ chức nhiều hội nghị nhất</h3>
-            <p class="text-3xl font-bold text-blue-700 mt-2"><%= maxHuyen %></p>
+            <p class="text-3xl font-bold text-blue-700 mt-2">
+              <%= maxHuyen %>
+            </p>
             <!-- <p class="text-gray-600 mt-1">Số lượng: <%= maxHuyen%> hội nghị</p> -->
           </div>
         </div>
@@ -53,70 +64,75 @@
         <form action="/export" method="get" class="mt-6 text-right">
           <input type="hidden" name="from" value="<%= chartData.fromDate %>">
           <input type="hidden" name="to" value="<%= chartData.toDate %>">
-          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Export Excel</button>
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Export
+            Excel</button>
         </form>
-      <% } %>
+        <% } %>
     </div>
   </main>
 </div>
 
-<!-- Chart.js script -->
-<script src="/chart.js"></script>
-<script src="/chart.js"></script>
-<% if (chartData) { %>
-<script>
-  // Biểu đồ theo huyện (Pie Chart)
-  const districtCtx = document.getElementById('districtChart').getContext('2d');
-  new Chart(districtCtx, {
-    type: 'pie',
-    data: {
-      labels: <%- JSON.stringify(Object.keys(chartData.byDistrict)) %>,
-      datasets: [{
-        data: <%- JSON.stringify(Object.values(chartData.byDistrict)) %>,
-        backgroundColor: ['#f87171', '#60a5fa', '#34d399', '#facc15', '#c084fc', '#f472b6']
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'bottom'
-        }
-      }
-    }
-  });
 
-  // Biểu đồ theo loại hình (Line Chart)
-  const typeCtx = document.getElementById('typeChart').getContext('2d');
-  new Chart(typeCtx, {
-    type: 'line',
-    data: {
-      labels: <%- JSON.stringify(chartData.typeLabels) %>,
-      datasets: [{
-        label: 'Số lượng loại hình',
-        data: <%- JSON.stringify(chartData.typeData) %>,
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        fill: true,
-        tension: 0.3,
-        pointBackgroundColor: '#1d4ed8'
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true
+<script src="/chart.js"></script>
+
+<% if (chartData && chartData.typeLabels && chartData.typeLabels.length > 0) { %>
+  <script>
+    // Biểu đồ theo huyện (Pie Chart)
+    const districtLabels = <%- JSON.stringify(Object.keys(chartData.byDistrict)) %>;
+    const districtData = <%- JSON.stringify(Object.values(chartData.byDistrict)) %>;
+    if (districtLabels.length > 0) {
+      const districtCtx = document.getElementById('districtChart').getContext('2d');
+      new Chart(districtCtx, {
+        type: 'pie',
+        data: {
+          labels: districtLabels,
+          datasets: [{
+            data: districtData,
+            backgroundColor: [
+              '#f87171', '#60a5fa', '#34d399',
+              '#facc15', '#c084fc', '#f472b6', '#4ade80'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
         }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { precision: 0 }
-        }
-      }
+      });
     }
-  });
-</script>
+
+    // Biểu đồ theo loại hình (Line Chart)
+    const typeLabels = <%- JSON.stringify(chartData.typeLabels) %>;
+    const typeData = <%- JSON.stringify(chartData.typeData) %>;
+    if (typeLabels.length > 0) {
+      const typeCtx = document.getElementById('typeChart').getContext('2d');
+      new Chart(typeCtx, {
+        type: 'line',
+        data: {
+          labels: typeLabels,
+          datasets: [{
+            label: 'Số lượng loại hình',
+            data: typeData,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.3,
+            pointBackgroundColor: '#1d4ed8'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: true } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 }
+            }
+          }
+        }
+      });
+    }
+  </script>
 <% } %>
-

@@ -13,6 +13,7 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 app.use(express.static('public'));
+app.use('/uploads', express.static('uploads'));
 app.use(expressLayouts);
 app.set('layout', 'main');
 app.use(cookieParser());

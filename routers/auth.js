@@ -56,7 +56,7 @@ routerAuth.post('/login', async (req, res) => {
       maxAge: 60 * 60 * 1000
     });
 
-    res.redirect(isAdmin  ? "/DKHN" : "/DKTGHN");
+    res.redirect(isAdmin  ? "/PC" : "/DKHN");
   } catch (error) {
     console.error(error);
     res.render('login', { message: 'Error during login' ,layout: false});

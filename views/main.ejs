@@ -23,18 +23,19 @@
     <div class="p-4 border-b font-bold text-lg"><%= username %></div>
     <nav class="flex-1 overflow-y-auto">
       <% if (role==='admin' ) {%>
-        <a href="/DKHN" class="block px-4 py-3 hover:bg-blue-100 ">Đăng
-          ký & quản lý HN</a>
         <a href="/PC" class="block px-4 py-3 hover:bg-blue-100 ">Phân
           xe</a>
-        <a href="/BCKQ" class="block px-4 py-3 hover:bg-blue-100 ">Báo
-          cáo kết quả</a>
+      
         <a href="/KT" class="block px-4 py-3 hover:bg-blue-100 ">Kiểm
           tra</a>
         <a href="/TK" class="block px-4 py-3 hover:bg-blue-100 ">Thống
           kê</a>
         <% } else { %>
-          <a href="/DKTGHN" class="block px-4 py-3 hover:bg-blue-100 ">Đăng ký tham gia HN</a>
+          <a href="/DKHN" class="block px-4 py-3 hover:bg-blue-100 ">Đăng
+          ký & quản lý HN</a>
+            <a href="/BCKQ" class="block px-4 py-3 hover:bg-blue-100 ">Báo
+          cáo kết quả</a>
+          <!-- <a href="/DKTGHN" class="block px-4 py-3 hover:bg-blue-100 ">Đăng ký tham gia HN</a> -->
           <a href="/KTPC" class="block px-4 py-3 hover:bg-blue-100 ">Kiểm tra xe đã phân công</a>
           <%} %>
 
