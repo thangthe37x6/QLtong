@@ -1,7 +1,7 @@
 <div class="md:pl-64">
   <!-- Tiêu đề -->
   <div class="top-0 z-10 text-center py-6">
-    <h1 class="text-2xl font-bold">PHÂN XE</h1>
+    <h1 class="text-2xl font-bold">KIỂM TRA PHÂN XE</h1>
   </div>
 
   <!-- Nội dung -->
@@ -22,7 +22,7 @@
           <table class="w-full text-left bg-white overflow-hidden rounded-2xl">
             <thead class="bg-gray-100 text-gray-700">
               <tr>
-               <th class="p-3">STT</th>
+                <th class="p-3">STT</th>
                 <th class="p-3">ngày tổ chức</th>
                 <th class="p-3">Thứ</th>
                 <th class="p-3">Buổi</th>
@@ -76,25 +76,21 @@
           `;
         });
       } else {
-        bangHoiNghi.classList.add('hidden');
-         bodyHoiNghi.innerHTML = '';
-        data.forEach((item, index) => {
-          bodyHoiNghi.innerHTML += `
-            <tr class="border-t">
-                <td colspan="10" class="p-3 text-center text-gray-500">Không tìm thấy hội nghị</td>
-                `;
-        });  
+        bangHoiNghi.classList.remove('hidden'); // <-- phải hiện bảng ra
+        bodyHoiNghi.innerHTML = `
+    <tr class="border-t">
+      <td colspan="10" class="p-3 text-center text-gray-500">Không tìm thấy hội nghị</td>
+    </tr>
+  `;
       }
     } catch (err) {
       console.error("Lỗi khi tải dữ liệu:", err);
-          bangHoiNghi.classList.add('hidden');
-         bodyHoiNghi.innerHTML = '';
-        data.forEach((item, index) => {
-          bodyHoiNghi.innerHTML += `
-            <tr class="border-t">
-                <td colspan="10" class="p-3 text-center text-gray-500">Lỗi tải dữ liệu</td>
-                `;
-        });  
+      bangHoiNghi.classList.remove('hidden');
+      bodyHoiNghi.innerHTML = `
+    <tr class="border-t">
+      <td colspan="10" class="p-3 text-center text-red-500">Lỗi khi tải dữ liệu</td>
+    </tr>
+  `;
     }
   });
 </script>
