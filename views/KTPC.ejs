@@ -77,11 +77,24 @@
         });
       } else {
         bangHoiNghi.classList.add('hidden');
-        alert("Không có hội nghị trong ngày này.");
+         bodyHoiNghi.innerHTML = '';
+        data.forEach((item, index) => {
+          bodyHoiNghi.innerHTML += `
+            <tr class="border-t">
+                <td colspan="10" class="p-3 text-center text-gray-500">Không tìm thấy hội nghị</td>
+                `;
+        });  
       }
     } catch (err) {
       console.error("Lỗi khi tải dữ liệu:", err);
-      alert("Có lỗi khi lấy dữ liệu.");
+          bangHoiNghi.classList.add('hidden');
+         bodyHoiNghi.innerHTML = '';
+        data.forEach((item, index) => {
+          bodyHoiNghi.innerHTML += `
+            <tr class="border-t">
+                <td colspan="10" class="p-3 text-center text-gray-500">Lỗi tải dữ liệu</td>
+                `;
+        });  
     }
   });
 </script>
