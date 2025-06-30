@@ -1,0 +1,41 @@
+<div class="md:pl-64">
+    <!-- Tiêu đề -->
+    <div class="top-0 z-10 text-center py-6">
+        <h1 class="text-2xl font-bold">THỐNG KÊ</h1>
+
+        <% if (message) { %>
+            <div class="mt-2 text-green-600 font-semibold">
+                <%= message %>
+            </div>
+            <% } %>
+    </div>
+
+
+    <!-- Nội dung -->
+    <main class="p-6">
+        <div class="max-w-4xl mx-auto p-6">
+            <!-- Form lọc thời gian -->
+            <form action="/QLDL" method="POST"
+                class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <div>
+                        <label class="block font-medium mb-1">Từ ngày:</label>
+                        <input type="date" name="fromDate" required
+                            class="w-full border border-gray-300 rounded px-3 py-2">
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1">Đến ngày:</label>
+                        <input type="date" name="toDate" required
+                            class="w-full border border-gray-300 rounded px-3 py-2">
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">xóa dữ
+                            liệu</button>
+                    </div>
+            </form>
+
+        </div>
+    </main>
+</div>

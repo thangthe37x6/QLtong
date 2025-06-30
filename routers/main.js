@@ -21,24 +21,24 @@ routermain.get("/PC", authMiddleware, requireAdmin, async (req, res) => {
   }
 });
 
-routermain.get('/api/PC', authMiddleware,requireAdmin, async (req, res) => {
+routermain.get('/api/PC', authMiddleware, requireAdmin, async (req, res) => {
   try {
     const { ngayToChuc } = req.query; // lấy từ URL query
     if (!ngayToChuc) return res.status(400).json({ error: 'Thiếu ngày tổ chức' });
 
-    const data = await conferenceData.find({ ngayToChuc: ngayToChuc });
+    const data = (await conferenceData.find({ ngayToChuc: ngayToChuc })).sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error: 'Không thể lấy danh sách hội nghị' });
   }
 });
-routermain.post('/PC/update/:id', authMiddleware,requireAdmin, async (req, res) => {
+routermain.post('/PC/update/:id', authMiddleware, requireAdmin, async (req, res) => {
   try {
-    const updatedConference = await conferenceData.findByIdAndUpdate(
+    const updatedConference = (await conferenceData.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    );
+    )).sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
 
     if (!updatedConference) {
       return res.status(404).json({ error: 'Không tìm thấy hội nghị để cập nhật' });
@@ -51,7 +51,7 @@ routermain.post('/PC/update/:id', authMiddleware,requireAdmin, async (req, res) 
   }
 });
 
-routermain.post('/PC/delete/:id', authMiddleware,requireAdmin, async (req, res) => {
+routermain.post('/PC/delete/:id', authMiddleware, requireAdmin, async (req, res) => {
   try {
     // 1. Tìm hội nghị trước khi xóa
     const conference = await conferenceData.findById(req.params.id);
@@ -110,14 +110,14 @@ routermain.get('/api/KT', authMiddleware, requireAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Thiếu ngày tổ chức.' });
     }
 
-    const list = await conferenceData.find({
+    const list = (await conferenceData.find({
       ngayToChuc: date,
       $or: [
         { trangThai: { $exists: false } }, // không có trường này
         { trangThai: null },               // hoặc null
         { trangThai: '' }                  // hoặc chuỗi rỗng
       ]
-    }).lean();
+    }).lean()).sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
 
     res.status(200).json(list);
   } catch (err) {
@@ -285,8 +285,28 @@ routermain.get('/export', authMiddleware, requireAdmin, async (req, res) => {
   res.end();
 });
 
+routermain.get("/QLDL", authMiddleware, requireAdmin, (req, res) => {
+  const username = req.user.username
+  const role = req.user.role
+  res.status(200).render("QLDL", { username: username, role: role, message: null })
+})
 
+routermain.post('/QLDL', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const username = req.user.username
+    const role = req.user.role
+    const { fromDate, toDate } = req.body;
 
+    await conferenceData.deleteMany({
+      ngayToChuc: { $gte: fromDate, $lte: toDate }
+    });
+
+    res.status(200).render("QLDL", { message: "dữ liệu xóa thành công", username: username, role: role });
+  } catch (error) {
+    console.error("❌ Lỗi khi xoá dữ liệu:", error);
+    res.status(500).send("Lỗi khi xoá dữ liệu");
+  }
+});
 routermain.post('/logout', (req, res) => {
   res.clearCookie('token'); // hoặc tên cookie chứa JWT bạn dùng
   res.redirect('/login');   // hoặc bất kỳ trang nào sau khi đăng xuất

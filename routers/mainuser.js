@@ -26,7 +26,8 @@ routerMainUser.get('/DKHN', authMiddleware, async (req, res) => {
   try {
     const username = req.user.username
     const role = req.user.role
-    const data = await conferenceData.find({ username: username })
+    const data = (await conferenceData.find({ username: username }).lean())
+  .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
     res.status(200).render("DKHN", { data, role: role, username: req.user.username });
   } catch (error) {
     console.error('Lỗi khi lấy danh sách hội nghị:', error);
@@ -38,7 +39,8 @@ routerMainUser.get('/DKHN', authMiddleware, async (req, res) => {
 routerMainUser.get('/api/DKHN', authMiddleware, async (req, res) => {
   try {
     const username = req.user.username
-    const data = await conferenceData.find({ username: username })
+    const data = (await conferenceData.find({ username: username }).lean())
+  .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error: 'Không thể lấy danh sách hội nghị' });
@@ -63,11 +65,11 @@ routerMainUser.post('/DKHN', authMiddleware, async (req, res) => {
 // Cập nhật hội nghị theo ID
 routerMainUser.post('/DKHN/update/:id', authMiddleware, async (req, res) => {
   try {
-    const updatedConference = await conferenceData.findByIdAndUpdate(
+    const updatedConference = (await conferenceData.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    );
+    ).lean()).sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
 
     if (!updatedConference) {
       return res.status(404).json({ error: 'Không tìm thấy hội nghị để cập nhật' });
@@ -121,14 +123,14 @@ routerMainUser.get('/BCKQ', authMiddleware, async (req, res) => {
     const username = req.user.username;
     const role = req.user.role;
 
-    const data = await conferenceData.find({
+    const data =( await conferenceData.find({
       username: username,
       $or: [
         { nhomPhuTrach: { $exists: false } },
         { nhomPhuTrach: null },
         { nhomPhuTrach: '' }
       ]
-    }).lean();
+    }).lean()).sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
 
     res.status(200).render("BCKQ", {
       data,
