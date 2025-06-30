@@ -33,7 +33,7 @@ routerMainUser.get('/DKHN', authMiddleware, async (req, res) => {
 
 });
 
-routerMainUser.get('/api/DKHN', authMiddleware,async (req, res) => {
+routerMainUser.get('/api/DKHN', authMiddleware, async (req, res) => {
   try {
     const username = req.user.username
     const data = await conferenceData.find({ username: username })
@@ -42,14 +42,14 @@ routerMainUser.get('/api/DKHN', authMiddleware,async (req, res) => {
     res.status(500).json({ error: 'Không thể lấy danh sách hội nghị' });
   }
 });
-routerMainUser.post('/DKHN', authMiddleware,  async (req, res) => {
+routerMainUser.post('/DKHN', authMiddleware, async (req, res) => {
   try {
     const username = req.user.username
     const { buoiToChuc, ngayToChuc, huyenToChuc, loaiHinh, diaDiem } = req.body
     const N_ngay = new Date(ngayToChuc)
     const days = ["Chủ nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
     const thu = days[N_ngay.getDay()];
-    const conference_new = new conferenceData({ username: username,thu: thu, buoiToChuc:buoiToChuc,  ngayToChuc: ngayToChuc, huyenToChuc: huyenToChuc, loaiHinh: loaiHinh, diaDiem: diaDiem})
+    const conference_new = new conferenceData({ username: username, thu: thu, buoiToChuc: buoiToChuc, ngayToChuc: ngayToChuc, huyenToChuc: huyenToChuc, loaiHinh: loaiHinh, diaDiem: diaDiem })
     await conference_new.save()
     res.redirect("/DKHN")
   } catch (error) {
@@ -78,7 +78,7 @@ routerMainUser.post('/DKHN/update/:id', authMiddleware, async (req, res) => {
   }
 });
 
-routerMainUser.post('/DKHN/delete/:id', authMiddleware,  async (req, res) => {
+routerMainUser.post('/DKHN/delete/:id', authMiddleware, async (req, res) => {
   try {
     // 1. Tìm hội nghị trước khi xóa
     const conference = await conferenceData.findById(req.params.id);
@@ -114,30 +114,28 @@ routerMainUser.post('/DKHN/delete/:id', authMiddleware,  async (req, res) => {
 });
 
 // --------------------------------------------------------------------------------------------------------------------------
-
-routerMainUser.get("/BCKQ", authMiddleware,  (req, res) => {
+routerMainUser.get('/BCKQ', authMiddleware, async (req, res) => {
   try {
+    const username = req.user.username;
     const role = req.user.role;
+
+    const data = await conferenceData.find({
+      username: username,
+      $or: [
+        { nhomPhuTrach: { $exists: false } },
+        { nhomPhuTrach: null },
+        { nhomPhuTrach: '' }
+      ]
+    }).lean();
+
     res.status(200).render("BCKQ", {
-      data: [], 
-      role: role,
-      username: req.user.username,
+      data,
+      role,
+      username
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json("lỗi không tìm thấy dữ liệu");
-  }
-});
-
-routerMainUser.get('/api/BCKQ', authMiddleware, async (req, res) => {
-  try {
-    const { ngayToChuc } = req.query; // lấy từ URL query
-    if (!ngayToChuc) return res.status(400).json({ error: 'Thiếu ngày tổ chức' });
-
-    const data = await conferenceData.find({ ngayToChuc: ngayToChuc });
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ error: 'Không thể lấy danh sách hội nghị' });
+    console.error("Lỗi khi lấy dữ liệu hội nghị:", error);
+    res.status(500).send("Không thể lấy danh sách hội nghị");
   }
 });
 
@@ -155,7 +153,7 @@ routerMainUser.post(
     console.log(anh1, anh2)
     await conferenceData.findByIdAndUpdate(idHoiNghi, {
       $set: {
-        nhomPhuTrach:nhomPhuTrach,
+        nhomPhuTrach: nhomPhuTrach,
         SL: Number(soLuongThamDu),
         anhDanhSach: anh1,
         anhTongThe: anh2
@@ -260,7 +258,7 @@ routerMainUser.post('/DKTGHN/delete/:id', authMiddleware, async (req, res) => {
 });
 
 
-routerMainUser.get('/api/DKTGHN/:id',authMiddleware, async (req, res) => {
+routerMainUser.get('/api/DKTGHN/:id', authMiddleware, async (req, res) => {
   try {
     const info = await conferenceData.findById(req.params.id);
     if (!info) res.status(401).json({ message: "không tìm thấy thông tin" })
@@ -289,7 +287,7 @@ routerMainUser.get("/api/KTPC", authMiddleware, async (req, res) => {
 routerMainUser.get("/personal", authMiddleware, (req, res) => {
   try {
 
-    res.status(200).render('personalAmin', { message: null , username: req.user.username, role: req.user.role})
+    res.status(200).render('personalAmin', { message: null, username: req.user.username, role: req.user.role })
   } catch (error) {
     console.log(error)
     res.status(500).json({ error: "Lỗi lấy hội nghị theo ngày" });
@@ -297,7 +295,7 @@ routerMainUser.get("/personal", authMiddleware, (req, res) => {
   }
 })
 
-routerMainUser.post("/personal/export",authMiddleware, async (req, res) => {
+routerMainUser.post("/personal/export", authMiddleware, async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const data = await personalData.find({ 'detailHN.ngayToChuc': { $gte: startDate, $lte: endDate } });

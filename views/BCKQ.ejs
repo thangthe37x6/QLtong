@@ -7,24 +7,9 @@
   <!-- Nội dung -->
   <main class="p-6">
     <div class="max-w-4xl mx-auto">
-      <!-- Form chọn ngày -->
-      <div class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
-        <div class="mb-4">
-          <label class="block mb-2 font-semibold text-gray-700">Ngày tổ chức (tháng/ngày/năm)</label>
-          <input type="date" id="ngayToChuc" name="ngayToChuc" required
-            class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-        <div class="text-center">
-          <button onclick="fetchList()"
-            class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition shadow-md">
-            Lọc HN theo ngày
-          </button>
-        </div>
-      </div>
-
       <!-- Bảng danh sách -->
       <div class="mt-10">
-        <h3 class="text-lg font-bold mb-3">Danh sách hội nghị trong ngày</h3>
+        <h3 class="text-lg font-bold mb-3">Danh sách hội nghị chưa có nhóm phụ trách</h3>
         <div class="overflow-x-auto rounded-2xl shadow-md border border-gray-300">
           <table class="w-full text-left bg-white rounded-2xl">
             <thead class="bg-gray-100 text-gray-700">
@@ -40,105 +25,73 @@
                 <th class="p-3">Hoạt động</th>
               </tr>
             </thead>
-            <tbody id="conference-table" class="text-sm divide-y divide-gray-200 text-center">
-              <!-- Nội dung động từ fetchList -->
+            <tbody class="text-sm divide-y divide-gray-200 text-center">
+              <% if (data.length === 0) { %>
+                <tr><td colspan="9" class="p-3 text-center text-gray-500">Không có hội nghị nào cần báo cáo</td></tr>
+              <% } else { %>
+                <% data.forEach((item, index) => { %>
+                  <tr class="border-b hover:bg-gray-50 transition">
+                    <td class="p-3"><%= index + 1 %></td>
+                    <td class="p-3"><%= item.ngayToChuc || '' %></td>
+                    <td class="p-3"><%= item.thu || '' %></td>
+                    <td class="p-3"><%= item.buoiToChuc || '' %></td>
+                    <td class="p-3"><%= item.huyenToChuc || '' %></td>
+                    <td class="p-3"><%= item.diaDiem || '' %></td>
+                    <td class="p-3"><%= item.loaiHinh || '' %></td>
+                    <td class="p-3"><%= item.PC || '' %></td>
+                    <td class="p-3 text-center">
+                      <button onclick="update('<%= item._id %>')" class="text-red-600 hover:text-red-800 text-sm underline">Báo Cáo</button>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
             </tbody>
           </table>
         </div>
       </div>
-      
     </div>
   </main>
 
   <!-- Modal nổi -->
-<div id="modalBaoCao"
-  class="fixed inset-0 z-50 hidden flex items-center justify-center">
-  
-  <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-xl relative">
-    <!-- Nút đóng -->
-    <button onclick="closeModal()"
-      class="absolute top-2 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold">
-      &times;
-    </button>
-
-    <!-- Tiêu đề -->
-    <h2 class="text-xl font-bold mb-4 text-center text-blue-700">Báo cáo kết quả hội nghị</h2>
-
-    <!-- Form -->
-    <form id="formBaoCao" method="POST" enctype="multipart/form-data">
-      <input type="hidden" name="idHoiNghi" id="idHoiNghi" />
-
-      <div class="mb-4">
-        <label class="block mb-1">Nhóm phụ trách</label>
-        <input name="PC" required class="w-full border p-2 rounded" />
-      </div>
-      <div class="mb-4">
-        <label class="block mb-1">Số lượng tham dự</label>
-        <input type="number" name="soLuongThamDu" required class="w-full border p-2 rounded" />
-      </div>
-      <div class="mb-4">
-        <label class="block mb-1">Ảnh danh sách khách hàng</label>
-        <input type="file" name="anhDanhSach" accept="image/*" required class="w-full border p-2 rounded" />
-      </div>
-      <div class="mb-4">
-        <label class="block mb-1">Ảnh tổ chức hội nghị</label>
-        <input type="file" name="anhTongThe" accept="image/*" required class="w-full border p-2 rounded" />
-      </div>
-      <div class="text-center">
-        <button type="submit"
-          class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition font-semibold">
-          Gửi báo cáo
-        </button>
-      </div>
-    </form>
+  <div id="modalBaoCao" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+    <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-xl relative">
+      <button onclick="closeModal()" class="absolute top-2 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold">&times;</button>
+      <h2 class="text-xl font-bold mb-4 text-center text-blue-700">Báo cáo kết quả hội nghị</h2>
+      <form id="formBaoCao" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="idHoiNghi" id="idHoiNghi" />
+        <div class="mb-4">
+          <label class="block mb-1">Nhóm phụ trách</label>
+          <input name="nhomPhuTrach" required class="w-full border p-2 rounded" />
+        </div>
+        <div class="mb-4">
+          <label class="block mb-1">Số lượng tham dự</label>
+          <input type="number" name="soLuongThamDu" required class="w-full border p-2 rounded" />
+        </div>
+        <div class="mb-4">
+          <label class="block mb-1">Ảnh danh sách khách hàng</label>
+          <input type="file" name="anhDanhSach" accept="image/*" required class="w-full border p-2 rounded" />
+        </div>
+        <div class="mb-4">
+          <label class="block mb-1">Ảnh tổ chức hội nghị</label>
+          <input type="file" name="anhTongThe" accept="image/*" required class="w-full border p-2 rounded" />
+        </div>
+        <div class="text-center">
+          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition font-semibold">
+            Gửi báo cáo
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
-</div>
-
-
-
 <script>
-  async function fetchList() {
-    const ngay = document.getElementById("ngayToChuc").value;
-
-
-    const res = await fetch(`/api/BCKQ?ngayToChuc=${ngay}`);
-    const data = await res.json();
-    if (data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="10" class="p-3 text-center text-gray-500">Không có hội nghị nào trong ngày này</td></tr>';
-      return;
-    }
-    const tbody = document.getElementById('conference-table');
-    tbody.innerHTML = '';
-
-    data.forEach((item, index) => {
-      tbody.innerHTML += `
-       <tr class="border-b hover:bg-gray-50 transition" data-id="${item._id}">
-          <td class="p-3">${index + 1}</td>
-          <td class="p-3">${item.ngayToChuc || ""}</td>
-          <td class="p-3">${item.thu || ""}</td>
-          <td class="p-3">${item.buoiToChuc || ""}</td>
-          <td class="p-3">${item.huyenToChuc || ""}</td>
-          <td class="p-3">${item.diaDiem || ""}</td>
-          <td class="p-3">${item.loaiHinh || ""}</td>
-          <td class="p-3">${item.PC || ""}</td>
-          <td class="p-3 text-center">
-            <button onclick="update('${item._id}')" class="text-red-600 hover:text-red-800 text-sm underline">Báo Cáo</button>
-          </td>
-        </tr>
-    `;
-    });
-
-    addEditListeners();
-  }
   function update(id) {
     document.getElementById("idHoiNghi").value = id;
     document.getElementById("formBaoCao").action = "/BCKQ";
     document.getElementById("modalBaoCao").classList.remove("hidden");
     document.getElementById("modalBaoCao").classList.add("flex");
   }
-
   function closeModal() {
     document.getElementById("modalBaoCao").classList.add("hidden");
     document.getElementById("modalBaoCao").classList.remove("flex");

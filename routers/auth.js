@@ -62,27 +62,6 @@ routerAuth.post('/login', async (req, res) => {
     res.render('login', { message: 'Error during login' ,layout: false});
   }
 });
-routerAuth.get('/forgot', (req, res) => {
-  res.render('forgot', { message: null ,layout: false});
-});
 
-routerAuth.post('/forgot', async (req, res) => {
-  const { username, newPassword } = req.body;
-
-  try {
-    const user = await User.findOne({ username });
-
-    if (!user) {
-      return res.render('forgot', { message: "Không tìm thấy tên người dùng này." ,layout: false});
-    }
-    user.password = newPassword;
-    await user.save();
-
-    res.redirect('/login');
-  } catch (error) {
-    console.error("❌ Lỗi khi reset mật khẩu:", error);
-    res.render('forgot', { message: "Lỗi hệ thống." ,layout: false});
-  }
-});
 
 export default routerAuth;

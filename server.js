@@ -17,8 +17,9 @@ app.use('/uploads', express.static('uploads'));
 app.use(expressLayouts);
 app.set('layout', 'main');
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
+
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+app.use(express.json({ limit: '100mb' }));
 
 app.use("/", routerAuth); 
 app.use("/", routermain); 
