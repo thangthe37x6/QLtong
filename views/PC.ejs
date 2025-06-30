@@ -79,7 +79,7 @@
         ${renderEditableCell("diaDiem", item.diaDiem)}
         ${renderEditableCell("username", item.username)}
         ${renderEditableCell("gioDangKi", new Date(item.createdAt).toLocaleString('vi-VN'))}
-        ${renderEditableCell("PC", "nhập xe phụ trách")}
+        ${renderEditableCell("PC", item.PC ? item.PC : 'Nhập xe')}
         <td class="p-3 text-center">
           <button onclick="deleteItem('${item._id}')" class="text-red-600 hover:text-red-800 text-xl">xóa</button>
         </td>

@@ -15,9 +15,11 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
     cb(null, `${Date.now()}-${file.fieldname}${ext}`);
-  }
+  },
 });
-const upload = multer({ storage });
+const upload = multer({ storage: storage, limits: {
+    fileSize: 100 * 1024 * 1024, // 10 MB
+  }, });
 
 
 routerMainUser.get('/DKHN', authMiddleware, async (req, res) => {
