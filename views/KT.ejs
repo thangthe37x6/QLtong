@@ -54,7 +54,8 @@
   <!-- Modal phê duyệt -->
   <div id="modalPheDuyet" class="hidden fixed inset-0 z-50 flex items-center justify-center">
     <div class="bg-white rounded-xl p-6 shadow-2xl w-full max-w-md relative">
-      <button onclick="closeModal()" class="absolute top-2 right-4 text-gray-500 hover:text-red-600 text-xl">&times;</button>
+      <button onclick="closeModal()"
+        class="absolute top-2 right-4 text-gray-500 hover:text-red-600 text-xl">&times;</button>
       <h2 class="text-xl font-bold mb-4">Xác nhận phê duyệt</h2>
       <form id="formPheDuyet" onsubmit="submitPheDuyet(event)">
         <input type="hidden" name="idHoiNghi" id="idHoiNghi" />
@@ -69,20 +70,22 @@
 </div>
 
 <script>
- async function fetchList() {
-  const ngay = document.getElementById("ngayToChuc").value;
-  const res = await fetch(`/api/KT?date=${ngay}`);
-  const data = await res.json();
-  const tbody = document.getElementById('conference-table');
+  async function fetchList() {
+    const ngay = document.getElementById("ngayToChuc").value;
+    const res = await fetch(`/api/KT?date=${ngay}`);
+    const data = await res.json();
+    const tbody = document.getElementById('conference-table');
 
-  if (!Array.isArray(data) || data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="10" class="p-3 text-center text-gray-500">Không có hội nghị nào</td></tr>';
-    return;
-  }
+    if (!Array.isArray(data) || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="11" class="p-3 text-center text-gray-500">Không có hội nghị nào</td></tr>';
+      return;
+    }
 
-  tbody.innerHTML = '';
-  data.forEach((item, index) => {
-    tbody.innerHTML += `
+    tbody.innerHTML = '';
+    data.forEach((item, index) => {
+      if (item.trangThai) return;
+
+      tbody.innerHTML += `
       <tr class="border-b hover:bg-gray-50" data-id="${item._id}">
         <td class="p-3">${index + 1}</td>
         <td class="p-3">${item.nhomPhuTrach || ""}</td>
@@ -97,51 +100,50 @@
         <td class="p-3">
           <img src="/uploads/${item.anhTongThe}" class="h-20 w-auto rounded cursor-pointer" onclick="showImage('/uploads/${item.anhTongThe}')" />
         </td>
-          <td class="p-3">
+        <td class="p-3">
           <img src="/uploads/${item.anhTongThe2}" class="h-20 w-auto rounded cursor-pointer" onclick="showImage('/uploads/${item.anhTongThe2}')" />
         </td>
         <td class="p-3">
           <button onclick="openModal('${item._id}')" class="text-blue-600 underline hover:text-blue-800">Phê duyệt</button>
         </td>
       </tr>
-    `;
-  });
-}
-
-function openModal(id) {
-  document.getElementById('idHoiNghi').value = id;
-  document.getElementById('modalPheDuyet').classList.remove('hidden');
-}
-
-function closeModal() {
-  document.getElementById('modalPheDuyet').classList.add('hidden');
-}
-
-async function submitPheDuyet(e) {
-  e.preventDefault();
-  const idHoiNghi = document.getElementById('idHoiNghi').value;
-  const ghiChu = document.querySelector('[name="ghiChu"]').value;
-
-  const res = await fetch('/KT/PD', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ idHoiNghi, ghiChu }),
-  });
-
-  if (res.ok) {
-    alert('Đã phê duyệt thành công');
-    closeModal();
-    fetchList();
-  } else {
-    alert('Lỗi khi phê duyệt');
+      `;
+    });
   }
-}
 
-function showImage(src) {
-  const win = window.open();
-  win.document.write(`<img src="${src}" style="max-width:100%;height:auto;" />`);
-}
+  function openModal(id) {
+    document.getElementById('idHoiNghi').value = id;
+    document.getElementById('modalPheDuyet').classList.remove('hidden');
+  }
 
+  function closeModal() {
+    document.getElementById('modalPheDuyet').classList.add('hidden');
+  }
+
+  async function submitPheDuyet(e) {
+    e.preventDefault();
+    const idHoiNghi = document.getElementById('idHoiNghi').value;
+    const ghiChu = document.querySelector('[name="ghiChu"]').value;
+
+    const res = await fetch('/KT/PD', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ idHoiNghi, ghiChu }),
+    });
+
+    if (res.ok) {
+      alert('Đã phê duyệt thành công');
+      closeModal();
+      fetchList();
+    } else {
+      alert('Lỗi khi phê duyệt');
+    }
+  }
+
+  function showImage(src) {
+    const win = window.open();
+    win.document.write(`<img src="${src}" style="max-width:100%;height:auto;" />`);
+  }
 </script>

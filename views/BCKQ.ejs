@@ -26,49 +26,33 @@
               </tr>
             </thead>
             <tbody class="text-sm divide-y divide-gray-200 text-center">
-              <% if (data.length===0) { %>
+              <% if (data.length === 0) { %>
                 <tr>
                   <td colspan="9" class="p-3 text-center text-gray-500">Không có hội nghị nào cần báo cáo</td>
                 </tr>
-                <% } else { %>
-                  <% data.forEach((item, index)=> { %>
+              <% } else { %>
+                <% data.forEach((item, index) => { %>
+                  <% if (!item.trangThai) { %>
                     <tr class="border-b hover:bg-gray-50 transition">
-                      <td class="p-3">
-                        <%= index + 1 %>
-                      </td>
-                      <td class="p-3">
-                        <%= item.ngayToChuc.replace(/^(\d{2})-(\d{2})-(\d{4})$/, '$2-$1-$3' ) || '' %>
-                      </td>
-                      <td class="p-3">
-                        <%= item.thu || '' %>
-                      </td>
-                      <td class="p-3">
-                        <%= item.buoiToChuc || '' %>
-                      </td>
-                      <td class="p-3">
-                        <%= item.huyenToChuc || '' %>
-                      </td>
-                      <td class="p-3">
-                        <%= item.diaDiem || '' %>
-                      </td>
-                      <td class="p-3">
-                        <%= item.loaiHinh || '' %>
-                      </td>
-                      <td class="p-3">
-                        <%= item.PC || '' %>
-                      </td>
+                      <td class="p-3"><%= index + 1 %></td>
+                      <td class="p-3"><%= item.ngayToChuc ? item.ngayToChuc.replace(/^(\d{2})-(\d{2})-(\d{4})$/, '$2-$1-$3') : '' %></td>
+                      <td class="p-3"><%= item.thu || '' %></td>
+                      <td class="p-3"><%= item.buoiToChuc || '' %></td>
+                      <td class="p-3"><%= item.huyenToChuc || '' %></td>
+                      <td class="p-3"><%= item.diaDiem || '' %></td>
+                      <td class="p-3"><%= item.loaiHinh || '' %></td>
+                      <td class="p-3"><%= item.PC || '' %></td>
                       <td class="p-3 text-center">
                         <% if (item.anhTongThe) { %>
-                          <button onclick="update('<%= item._id %>')"
-                            class="text-blue-600 hover:text-blue-800 text-sm underline">Chỉnh sửa Báo Cáo</button>
-                          <% } else { %>
-                            <button onclick="update('<%= item._id %>')"
-                              class="text-red-600 hover:text-red-800 text-sm underline">Báo Cáo</button>
-                            <% } %>
+                          <button onclick="update('<%= item._id %>')" class="text-blue-600 hover:text-blue-800 text-sm underline">Chỉnh sửa Báo Cáo</button>
+                        <% } else { %>
+                          <button onclick="update('<%= item._id %>')" class="text-red-600 hover:text-red-800 text-sm underline">Báo Cáo</button>
+                        <% } %>
                       </td>
                     </tr>
-                    <% }) %>
-                      <% } %>
+                  <% } %>
+                <% }) %>
+              <% } %>
             </tbody>
           </table>
         </div>
@@ -122,6 +106,7 @@
     document.getElementById("modalBaoCao").classList.remove("hidden");
     document.getElementById("modalBaoCao").classList.add("flex");
   }
+
   function closeModal() {
     document.getElementById("modalBaoCao").classList.add("hidden");
     document.getElementById("modalBaoCao").classList.remove("flex");
