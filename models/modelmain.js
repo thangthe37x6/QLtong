@@ -12,6 +12,7 @@ const conferenceSchema = new mongoose.Schema({
     SL: Number,
     anhDanhSach: String,
     anhTongThe: String,
+    anhTongThe2: String,
     PC: String,
     trangThai: String,
     ghiChu: String

@@ -75,6 +75,7 @@ routermain.post('/PC/delete/:id', authMiddleware, requireAdmin, async (req, res)
 
     deleteIfExists(conference.anhDanhSach);
     deleteIfExists(conference.anhTongThe);
+    deleteIfExists(conference.anhTongThe2);
 
     // 3. Xóa hội nghị trong MongoDB
     await conferenceData.findByIdAndDelete(req.params.id);
@@ -112,11 +113,6 @@ routermain.get('/api/KT', authMiddleware, requireAdmin, async (req, res) => {
 
     const list = (await conferenceData.find({
       ngayToChuc: date,
-      $or: [
-        { trangThai: { $exists: false } }, // không có trường này
-        { trangThai: null },               // hoặc null
-        { trangThai: '' }                  // hoặc chuỗi rỗng
-      ]
     }).lean()).sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
 
     res.status(200).json(list);

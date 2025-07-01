@@ -145,9 +145,9 @@
         <tr class="border-b hover:bg-gray-50 transition" data-id="${item._id}">
           <td class="p-3">${index + 1}</td>
           ${renderEditableCell("buoiToChuc", item.buoiToChuc)}
-          ${renderEditableCell("loaiHinh", item.loaiHinh)}
-          ${renderEditableCell("ngayToChuc", item.ngayToChuc.replace(/^(\d{2})-(\d{2})-(\d{4})$/, '$2-$1-$3'))}
-          ${renderEditableCell("huyenToChuc", item.huyenToChuc )}
+          <td class="p-3">${item.loaiHinh}</td>
+          ${renderEditableCell("diaDiem", item.ngayToChuc)}
+          <td class="p-3">${item.huyenToChuc}</td>
           ${renderEditableCell("diaDiem", item.diaDiem)}
           <td class="p-3 text-center">
             <button onclick="deleteItem('${item._id}')" class="text-red-600 hover:text-red-800 text-xl">xóa</button>

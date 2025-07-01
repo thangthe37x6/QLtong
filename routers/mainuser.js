@@ -17,17 +17,26 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}-${file.fieldname}${ext}`);
   },
 });
-const upload = multer({ storage: storage, limits: {
+const upload = multer({
+  storage: storage, limits: {
     fileSize: 100 * 1024 * 1024, // 10 MB
-  }, });
+  },
+});
 
 
 routerMainUser.get('/DKHN', authMiddleware, async (req, res) => {
   try {
     const username = req.user.username
     const role = req.user.role
-    const data = (await conferenceData.find({ username: username }).lean())
-  .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+    let data;
+    if (role === "admin") {
+      data = (await conferenceData.find({}).lean())
+        .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+    } else {
+      data = (await conferenceData.find({ username: username }).lean())
+        .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+    }
+
     res.status(200).render("DKHN", { data, role: role, username: req.user.username });
   } catch (error) {
     console.error('Lỗi khi lấy danh sách hội nghị:', error);
@@ -39,8 +48,15 @@ routerMainUser.get('/DKHN', authMiddleware, async (req, res) => {
 routerMainUser.get('/api/DKHN', authMiddleware, async (req, res) => {
   try {
     const username = req.user.username
-    const data = (await conferenceData.find({ username: username }).lean())
-  .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+    const role = req.user.role
+     let data;
+    if (role === "admin") {
+      data = (await conferenceData.find({}).lean())
+        .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+    } else {
+      data = (await conferenceData.find({ username: username }).lean())
+        .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+    }
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error: 'Không thể lấy danh sách hội nghị' });
@@ -106,6 +122,7 @@ routerMainUser.post('/DKHN/delete/:id', authMiddleware, async (req, res) => {
 
     deleteIfExists(conference.anhDanhSach);
     deleteIfExists(conference.anhTongThe);
+    deleteIfExists(conference.anhTongThe2);
 
     // 3. Xóa hội nghị trong MongoDB
     await conferenceData.findByIdAndDelete(req.params.id);
@@ -123,14 +140,14 @@ routerMainUser.get('/BCKQ', authMiddleware, async (req, res) => {
     const username = req.user.username;
     const role = req.user.role;
 
-    const data =( await conferenceData.find({
-      username: username,
-      $or: [
-        { nhomPhuTrach: { $exists: false } },
-        { nhomPhuTrach: null },
-        { nhomPhuTrach: '' }
-      ]
-    }).lean()).sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+     let data;
+    if (role === "admin") {
+      data = (await conferenceData.find({}).lean())
+        .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+    } else {
+      data = (await conferenceData.find({ username: username }).lean())
+        .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+    }
 
     res.status(200).render("BCKQ", {
       data,
@@ -148,19 +165,22 @@ routerMainUser.post(
   '/BCKQ', authMiddleware,
   upload.fields([
     { name: 'anhDanhSach', maxCount: 1 },
-    { name: 'anhTongThe', maxCount: 1 }
+    { name: 'anhTongThe', maxCount: 1 },
+    { name: 'anhTongThe2', maxCount: 1 }
   ]),
   async (req, res) => {
     const { idHoiNghi, soLuongThamDu, nhomPhuTrach } = req.body;
     const anh1 = req.files?.['anhDanhSach']?.[0]?.filename || null;
     const anh2 = req.files?.['anhTongThe']?.[0]?.filename || null;
+    const anh3 = req.files?.['anhTongThe2']?.[0]?.filename || null;
     console.log(anh1, anh2)
     await conferenceData.findByIdAndUpdate(idHoiNghi, {
       $set: {
         nhomPhuTrach: nhomPhuTrach,
         SL: Number(soLuongThamDu),
         anhDanhSach: anh1,
-        anhTongThe: anh2
+        anhTongThe: anh2,
+        anhTongThe2: anh3
       }
     });
 

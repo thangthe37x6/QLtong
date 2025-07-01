@@ -26,25 +26,49 @@
               </tr>
             </thead>
             <tbody class="text-sm divide-y divide-gray-200 text-center">
-              <% if (data.length === 0) { %>
-                <tr><td colspan="9" class="p-3 text-center text-gray-500">Không có hội nghị nào cần báo cáo</td></tr>
-              <% } else { %>
-                <% data.forEach((item, index) => { %>
-                  <tr class="border-b hover:bg-gray-50 transition">
-                    <td class="p-3"><%= index + 1 %></td>
-                    <td class="p-3"><%= item.ngayToChuc.replace(/^(\d{2})-(\d{2})-(\d{4})$/, '$2-$1-$3') || '' %></td>
-                    <td class="p-3"><%= item.thu || '' %></td>
-                    <td class="p-3"><%= item.buoiToChuc || '' %></td>
-                    <td class="p-3"><%= item.huyenToChuc || '' %></td>
-                    <td class="p-3"><%= item.diaDiem || '' %></td>
-                    <td class="p-3"><%= item.loaiHinh || '' %></td>
-                    <td class="p-3"><%= item.PC || '' %></td>
-                    <td class="p-3 text-center">
-                      <button onclick="update('<%= item._id %>')" class="text-red-600 hover:text-red-800 text-sm underline">Báo Cáo</button>
-                    </td>
-                  </tr>
-                <% }) %>
-              <% } %>
+              <% if (data.length===0) { %>
+                <tr>
+                  <td colspan="9" class="p-3 text-center text-gray-500">Không có hội nghị nào cần báo cáo</td>
+                </tr>
+                <% } else { %>
+                  <% data.forEach((item, index)=> { %>
+                    <tr class="border-b hover:bg-gray-50 transition">
+                      <td class="p-3">
+                        <%= index + 1 %>
+                      </td>
+                      <td class="p-3">
+                        <%= item.ngayToChuc.replace(/^(\d{2})-(\d{2})-(\d{4})$/, '$2-$1-$3' ) || '' %>
+                      </td>
+                      <td class="p-3">
+                        <%= item.thu || '' %>
+                      </td>
+                      <td class="p-3">
+                        <%= item.buoiToChuc || '' %>
+                      </td>
+                      <td class="p-3">
+                        <%= item.huyenToChuc || '' %>
+                      </td>
+                      <td class="p-3">
+                        <%= item.diaDiem || '' %>
+                      </td>
+                      <td class="p-3">
+                        <%= item.loaiHinh || '' %>
+                      </td>
+                      <td class="p-3">
+                        <%= item.PC || '' %>
+                      </td>
+                      <td class="p-3 text-center">
+                        <% if (item.anhTongThe1) { %>
+                          <button onclick="update('<%= item._id %>')"
+                            class="text-blue-600 hover:text-blue-800 text-sm underline">Chỉnh sửa Báo Cáo</button>
+                          <% } else { %>
+                            <button onclick="update('<%= item._id %>')"
+                              class="text-red-600 hover:text-red-800 text-sm underline">Báo Cáo</button>
+                            <% } %>
+                      </td>
+                    </tr>
+                    <% }) %>
+                      <% } %>
             </tbody>
           </table>
         </div>
@@ -55,7 +79,8 @@
   <!-- Modal nổi -->
   <div id="modalBaoCao" class="fixed inset-0 z-50 hidden flex items-center justify-center">
     <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-xl relative">
-      <button onclick="closeModal()" class="absolute top-2 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold">&times;</button>
+      <button onclick="closeModal()"
+        class="absolute top-2 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold">&times;</button>
       <h2 class="text-xl font-bold mb-4 text-center text-blue-700">Báo cáo kết quả hội nghị</h2>
       <form id="formBaoCao" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="idHoiNghi" id="idHoiNghi" />
@@ -72,11 +97,16 @@
           <input type="file" name="anhDanhSach" accept="image/*" required class="w-full border p-2 rounded" />
         </div>
         <div class="mb-4">
-          <label class="block mb-1">Ảnh tổ chức hội nghị</label>
+          <label class="block mb-1">Ảnh tổ chức hội nghị 1</label>
           <input type="file" name="anhTongThe" accept="image/*" required class="w-full border p-2 rounded" />
         </div>
+        <div class="mb-4">
+          <label class="block mb-1">Ảnh tổ chức hội nghị 2</label>
+          <input type="file" name="anhTongThe2" accept="image/*" required class="w-full border p-2 rounded" />
+        </div>
         <div class="text-center">
-          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition font-semibold">
+          <button type="submit"
+            class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition font-semibold">
             Gửi báo cáo
           </button>
         </div>
