@@ -34,11 +34,11 @@ routermain.get('/api/PC', authMiddleware, requireAdmin, async (req, res) => {
 });
 routermain.post('/PC/update/:id', authMiddleware, requireAdmin, async (req, res) => {
   try {
-    const updatedConference = (await conferenceData.findByIdAndUpdate(
+    const updatedConference = await conferenceData.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true }
-    )).sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+    )
 
     if (!updatedConference) {
       return res.status(404).json({ error: 'Không tìm thấy hội nghị để cập nhật' });
