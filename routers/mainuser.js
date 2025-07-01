@@ -65,11 +65,11 @@ routerMainUser.get('/api/DKHN', authMiddleware, async (req, res) => {
 routerMainUser.post('/DKHN', authMiddleware, async (req, res) => {
   try {
     const username = req.user.username
-    const { buoiToChuc, ngayToChuc, huyenToChuc, loaiHinh, diaDiem } = req.body
+    const { buoiToChuc, ngayToChuc, huyenToChuc, loaiHinh, diaDiem, nhomPhuTrach} = req.body
     const N_ngay = new Date(ngayToChuc)
     const days = ["Chủ nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
     const thu = days[N_ngay.getDay()];
-    const conference_new = new conferenceData({ username: username, thu: thu, buoiToChuc: buoiToChuc, ngayToChuc: ngayToChuc, huyenToChuc: huyenToChuc, loaiHinh: loaiHinh, diaDiem: diaDiem })
+    const conference_new = new conferenceData({ username: username, thu: thu, buoiToChuc: buoiToChuc, ngayToChuc: ngayToChuc, huyenToChuc: huyenToChuc, loaiHinh: loaiHinh, diaDiem: diaDiem, nhomPhuTrach:nhomPhuTrach })
     await conference_new.save()
     res.redirect("/DKHN")
   } catch (error) {
@@ -169,14 +169,13 @@ routerMainUser.post(
     { name: 'anhTongThe2', maxCount: 1 }
   ]),
   async (req, res) => {
-    const { idHoiNghi, soLuongThamDu, nhomPhuTrach } = req.body;
+    const { idHoiNghi, soLuongThamDu } = req.body;
     const anh1 = req.files?.['anhDanhSach']?.[0]?.filename || null;
     const anh2 = req.files?.['anhTongThe']?.[0]?.filename || null;
     const anh3 = req.files?.['anhTongThe2']?.[0]?.filename || null;
     console.log(anh1, anh2)
     await conferenceData.findByIdAndUpdate(idHoiNghi, {
       $set: {
-        nhomPhuTrach: nhomPhuTrach,
         SL: Number(soLuongThamDu),
         anhDanhSach: anh1,
         anhTongThe: anh2,
