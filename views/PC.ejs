@@ -10,20 +10,39 @@
   <main class="p-6">
     <div class="max-w-4xl mx-auto  p-6 ">
       <div class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
-        <div class="mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label class="block mb-2 font-semibold text-gray-700">Ngày tổ chức(tháng/ngày/năm)</label>
-            <input type="date" id="ngayToChuc" name="ngayToChuc" required
+            <label class="block mb-2 font-semibold text-gray-700">Từ ngày</label>
+            <input type="date" id="tuNgay" name="tuNgay" required
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">Đến ngày</label>
+            <input type="date" id="denNgay" name="denNgay" required
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">Loại Hình HN</label>
+            <select id="loaiHinh" name="loaiHinh" required
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">-- Chọn loại hình --</option>
+              <option value="HNCL Tiệc">HNCL tiệc</option>
+              <option value="HNCL Quà">HNCL quà</option>
+              <option value="HN nhóm chọn">HN nhóm chọn</option>
+              <option value="HN CS-01">HN CS-01</option>
+              <option value="HN CS-02">HN CS-02</option>
+              <option value="HN Boss">HN boss</option>
+              <option value="HN Ra Mắt">HN ra mắt</option>
+            </select>
+          </div>
         </div>
+
         <div class="pt-4 text-center">
           <button onclick="fetchList()"
             class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-200 shadow-md">
-            Lọc HN theo ngày
+            Lọc hội nghị
           </button>
         </div>
-
       </div>
       <div class="mt-10">
         <h3 class="text-lg font-bold mb-3">Danh sách hội nghị trong ngày</h3>
@@ -56,17 +75,25 @@
 
 <script>
   async function fetchList() {
-    const ngay = document.getElementById("ngayToChuc").value;
-    const res = await fetch(`/api/PC?ngayToChuc=${ngay}`);
+    const tuNgay = document.getElementById("tuNgay").value;
+    const denNgay = document.getElementById("denNgay").value;
+    const loaiHinh = document.getElementById("loaiHinh").value;
+
+    if (!tuNgay || !denNgay || !loaiHinh) {
+      alert("Vui lòng chọn đầy đủ thông tin lọc (từ ngày, đến ngày, loại hình)");
+      return;
+    }
+
+    const res = await fetch(`/api/PC?tuNgay=${tuNgay}&denNgay=${denNgay}&loaiHinh=${encodeURIComponent(loaiHinh)}`);
     const data = await res.json();
 
-    const tbody = document.getElementById('conference-table'); // <- chuyển lên đây
+    const tbody = document.getElementById('conference-table');
 
     if (data.length === 0) {
       tbody.innerHTML = `
       <tr>
         <td colspan="10" class="p-3 text-center text-gray-500">
-          Không có hội nghị nào trong ngày này
+          Không có hội nghị nào phù hợp
         </td>
       </tr>
     `;
@@ -96,7 +123,6 @@
 
     addEditListeners();
   }
-
   function renderEditableCell(field, value) {
     return `
     <td class="p-3 relative">

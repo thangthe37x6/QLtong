@@ -23,12 +23,22 @@ routermain.get("/PC", authMiddleware, requireAdmin, async (req, res) => {
 
 routermain.get('/api/PC', authMiddleware, requireAdmin, async (req, res) => {
   try {
-    const { ngayToChuc } = req.query; // lấy từ URL query
-    if (!ngayToChuc) return res.status(400).json({ error: 'Thiếu ngày tổ chức' });
+    const { tuNgay, denNgay, loaiHinh } = req.query;
 
-    const data = (await conferenceData.find({ ngayToChuc: ngayToChuc })).sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+    if (!tuNgay || !denNgay || !loaiHinh) {
+      return res.status(400).json({ error: 'Thiếu thông tin lọc' });
+    }
+
+    const query = {
+      ngayToChuc: { $gte: tuNgay, $lte: denNgay },
+      loaiHinh: loaiHinh
+    };
+
+    const data = await conferenceData.find(query).sort({ ngayToChuc: 1 });
+
     res.status(200).json(data);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Không thể lấy danh sách hội nghị' });
   }
 });

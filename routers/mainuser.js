@@ -301,15 +301,26 @@ routerMainUser.get("/KTPC", authMiddleware, async (req, res) => {
 });
 
 routerMainUser.get("/api/KTPC", authMiddleware, async (req, res) => {
-  const { from, to } = req.query;
-  const result = await conferenceData.find({
-    ngayToChuc: {
-      $gte: from,
-      $lte: to
-    }
-  });
+  const { from, to, loaiHinh } = req.query;
 
-  res.json(result);
+  if (!from || !to || !loaiHinh) {
+    return res.status(400).json({ error: 'Thiếu from, to hoặc loaiHinh' });
+  }
+
+  try {
+    const result = await conferenceData.find({
+      ngayToChuc: {
+        $gte: from,
+        $lte: to
+      },
+      loaiHinh: loaiHinh
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Không thể lấy dữ liệu' });
+  }
 });
 
 
