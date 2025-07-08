@@ -49,7 +49,7 @@ routerMainUser.get('/api/DKHN', authMiddleware, async (req, res) => {
   try {
     const username = req.user.username
     const role = req.user.role
-     let data;
+    let data;
     if (role === "admin") {
       data = (await conferenceData.find({}).lean())
         .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
@@ -65,11 +65,11 @@ routerMainUser.get('/api/DKHN', authMiddleware, async (req, res) => {
 routerMainUser.post('/DKHN', authMiddleware, async (req, res) => {
   try {
     const username = req.user.username
-    const { buoiToChuc, ngayToChuc, huyenToChuc, loaiHinh, diaDiem, nhomPhuTrach} = req.body
+    const { buoiToChuc, ngayToChuc, huyenToChuc, loaiHinh, diaDiem, nhomPhuTrach } = req.body
     const N_ngay = new Date(ngayToChuc)
     const days = ["Chủ nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
     const thu = days[N_ngay.getDay()];
-    const conference_new = new conferenceData({ username: username, thu: thu, buoiToChuc: buoiToChuc, ngayToChuc: ngayToChuc, huyenToChuc: huyenToChuc, loaiHinh: loaiHinh, diaDiem: diaDiem, nhomPhuTrach:nhomPhuTrach })
+    const conference_new = new conferenceData({ username: username, thu: thu, buoiToChuc: buoiToChuc, ngayToChuc: ngayToChuc, huyenToChuc: huyenToChuc, loaiHinh: loaiHinh, diaDiem: diaDiem, nhomPhuTrach: nhomPhuTrach })
     await conference_new.save()
     res.redirect("/DKHN")
   } catch (error) {
@@ -140,7 +140,7 @@ routerMainUser.get('/BCKQ', authMiddleware, async (req, res) => {
     const username = req.user.username;
     const role = req.user.role;
 
-     let data;
+    let data;
     if (role === "admin") {
       data = (await conferenceData.find({}).lean())
         .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
@@ -182,7 +182,7 @@ routerMainUser.post(
         anhTongThe2: anh3
       }
     });
-    
+
     res.redirect('/BCKQ');
   }
 );
@@ -301,8 +301,14 @@ routerMainUser.get("/KTPC", authMiddleware, async (req, res) => {
 });
 
 routerMainUser.get("/api/KTPC", authMiddleware, async (req, res) => {
-  const { date } = req.query;
-  const result = await conferenceData.find({ ngayToChuc: date });
+  const { from, to } = req.query;
+  const result = await conferenceData.find({
+    ngayToChuc: {
+      $gte: from,
+      $lte: to
+    }
+  });
+
   res.json(result);
 });
 
