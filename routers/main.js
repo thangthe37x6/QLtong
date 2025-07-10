@@ -307,15 +307,47 @@ routermain.get("/QLDL", authMiddleware, requireAdmin, (req, res) => {
 
 routermain.post('/QLDL', authMiddleware, requireAdmin, async (req, res) => {
   try {
-    const username = req.user.username
-    const role = req.user.role
+    const username = req.user.username;
+    const role = req.user.role;
     const { fromDate, toDate } = req.body;
 
+    // 1. Tìm danh sách conference cần xoá
+    const conferencesToDelete = await conferenceData.find({
+      ngayToChuc: { $gte: fromDate, $lte: toDate }
+    });
+
+    // 2. Hàm xoá ảnh nếu tồn tại
+    const deleteIfExists = (filename) => {
+      if (filename) {
+        const filePath = path.join('uploads', filename);
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.warn(`⚠️ Không thể xóa file ${filePath}:`, err.message);
+          } else {
+            console.log(`🗑️ Đã xóa file: ${filePath}`);
+          }
+        });
+      }
+    };
+
+    // 3. Xoá ảnh của từng conference
+    conferencesToDelete.forEach(conference => {
+      deleteIfExists(conference.anhDanhSach);
+      deleteIfExists(conference.anhTongThe);
+      deleteIfExists(conference.anhTongThe2);
+    });
+
+    // 4. Xoá dữ liệu trong MongoDB
     await conferenceData.deleteMany({
       ngayToChuc: { $gte: fromDate, $lte: toDate }
     });
 
-    res.status(200).render("QLDL", { message: "dữ liệu xóa thành công", username: username, role: role });
+    res.status(200).render("QLDL", {
+      message: "Dữ liệu và ảnh liên quan đã được xoá thành công",
+      username,
+      role
+    });
+
   } catch (error) {
     console.error("❌ Lỗi khi xoá dữ liệu:", error);
     res.status(500).send("Lỗi khi xoá dữ liệu");
