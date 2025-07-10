@@ -116,14 +116,20 @@ routermain.get("/KT", authMiddleware, requireAdmin, (req, res) => {
 // [GET] API: Trả về danh sách hội nghị theo ngày tổ chức
 routermain.get('/api/KT', authMiddleware, requireAdmin, async (req, res) => {
   try {
-    const { date } = req.query;
-    if (!date) {
-      return res.status(400).json({ error: 'Thiếu ngày tổ chức.' });
+    const { from, to } = req.query;
+
+    if (!from || !to) {
+      return res.status(400).json({ error: 'Thiếu from hoặc to.' });
     }
 
-    const list = (await conferenceData.find({
-      ngayToChuc: date,
-    }).lean()).sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
+    const list = await conferenceData.find({
+      ngayToChuc: {
+        $gte: from,
+        $lte: to
+      }
+    }).lean();
+
+    list.sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
 
     res.status(200).json(list);
   } catch (err) {

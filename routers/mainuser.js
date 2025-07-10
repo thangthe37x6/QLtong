@@ -308,12 +308,10 @@ routerMainUser.get("/api/KTPC", authMiddleware, async (req, res) => {
   }
 
   try {
+    const loaiHinhArr = loaiHinh.split(',');
     const result = await conferenceData.find({
-      ngayToChuc: {
-        $gte: from,
-        $lte: to
-      },
-      loaiHinh: loaiHinh
+      ngayToChuc: { $gte: from, $lte: to },
+      loaiHinh: { $in: loaiHinhArr }
     });
 
     res.json(result);

@@ -10,20 +10,20 @@
       <!-- Ô nhập ngày -->
       <div class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
         <div class="mb-4">
-          <label class="block font-semibold mb-1 mb-2">Từ ngày </label>
-          <div class="flex gap-4">
-            <input type="date" id="tuNgay" class="border rounded p-2 w-full" required />
+          <label class="block mb-2 font-semibold text-gray-700">Từ ngày </label>
+          <div >
+            <input type="date" id="tuNgay" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" required />
 
           </div>
-          <label class="block font-semibold mb-1 mb-2">Dến ngày </label>
-          <div class="flex gap-4">
+          <label class="block mb-2 font-semibold text-gray-700">Dến ngày </label>
+          <div >
 
-            <input type="date" id="denNgay" class="border rounded p-2 w-full" required />
+            <input type="date" id="denNgay" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" required />
           </div>
 
           <div class="mb-4">
-            <label class="block font-semibold mb-2">Loại Hình HN</label>
-            <select id="loaiHinh" required
+            <label class="block mb-2 font-semibold text-gray-700">Loại Hình HN (chọn nhiều lần)</label>
+            <select id="dropdownLoaiHinh"
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="">-- Chọn loại hình --</option>
               <option value="HNCL Tiệc">HNCL tiệc</option>
@@ -34,7 +34,11 @@
               <option value="HN Boss">HN boss</option>
               <option value="HN Ra Mắt">HN ra mắt</option>
             </select>
+
+            <!-- Hiển thị các mục đã chọn -->
+            <div id="selectedLoaiHinh" class="flex flex-wrap gap-2 mt-6"></div>
           </div>
+
           <button id="btnLoc" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Lọc</button>
 
         </div>
@@ -79,14 +83,14 @@
   btnLoc.addEventListener('click', async () => {
     const from = tuNgay.value;
     const to = denNgay.value;
-    const loaiHinh = document.getElementById("loaiHinh").value;
+    const loaiHinh = Array.from(selectedLoaiHinhSet);
 
     if (!from || !to || !loaiHinh) {
       return alert("Vui lòng chọn đủ từ ngày, đến ngày và loại hình HN");
     }
 
     try {
-      const res = await fetch(`/api/KTPC?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&loaiHinh=${encodeURIComponent(loaiHinh)}`);
+      const res = await fetch(`/api/KTPC?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&loaiHinh=${encodeURIComponent(loaiHinh.join(','))}`);
       const data = await res.json();
 
       bangHoiNghi.classList.remove('hidden');
@@ -124,4 +128,39 @@
     `;
     }
   });
+
+  const dropdownLoaiHinh = document.getElementById('dropdownLoaiHinh');
+  const selectedLoaiHinh = document.getElementById('selectedLoaiHinh');
+  const selectedLoaiHinhSet = new Set();
+
+  dropdownLoaiHinh.addEventListener('change', () => {
+    const value = dropdownLoaiHinh.value;
+    if (value && !selectedLoaiHinhSet.has(value)) {
+      selectedLoaiHinhSet.add(value);
+      renderLoaiHinh();
+    }
+  });
+
+  function renderLoaiHinh() {
+    selectedLoaiHinh.innerHTML = '';
+    selectedLoaiHinhSet.forEach(value => {
+      const div = document.createElement('div');
+      div.className = 'bg-gray-200 px-3 py-1 rounded-full flex items-center';
+
+      const span = document.createElement('span');
+      span.textContent = value;
+
+      const remove = document.createElement('span');
+      remove.textContent = '×';
+      remove.className = 'ml-2 text-red-500 cursor-pointer';
+      remove.onclick = () => {
+        selectedLoaiHinhSet.delete(value);
+        renderLoaiHinh();
+      };
+
+      div.appendChild(span);
+      div.appendChild(remove);
+      selectedLoaiHinh.appendChild(div);
+    });
+  }
 </script>
