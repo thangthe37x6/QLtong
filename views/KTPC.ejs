@@ -151,8 +151,9 @@
       span.textContent = value;
 
       const remove = document.createElement('span');
-      remove.textContent = '×';
-      remove.className = 'ml-2 text-red-500 cursor-pointer';
+      remove.textContent = 'xóa';
+      remove.className = 'ml-3 text-base text-red-500 cursor-pointer';
+      
       remove.onclick = () => {
         selectedLoaiHinhSet.delete(value);
         renderLoaiHinh();
