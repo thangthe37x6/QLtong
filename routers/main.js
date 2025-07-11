@@ -23,18 +23,17 @@ routermain.get("/PC", authMiddleware, requireAdmin, async (req, res) => {
 
 routermain.get('/api/PC', authMiddleware, requireAdmin, async (req, res) => {
   try {
-    const { tuNgay, denNgay, loaiHinh } = req.query;
-
-    if (!tuNgay || !denNgay || !loaiHinh) {
-      return res.status(400).json({ error: 'Thiếu thông tin lọc' });
+    const { from, to, loaiHinh } = req.query;
+    if (!from || !to || !loaiHinh) {
+      return res.status(400).json({ error: 'Thiếu from, to hoặc loaiHinh' });
     }
+    const loaiHinhArr = loaiHinh.split(','); // biến thành mảng
 
-    const query = {
-      ngayToChuc: { $gte: tuNgay, $lte: denNgay },
-      loaiHinh: loaiHinh
-    };
+    const data = await conferenceData.find({
+      ngayToChuc: { $gte: from, $lte: to },
+      loaiHinh: { $in: loaiHinhArr }
+    });
 
-    const data = await conferenceData.find(query).sort({ ngayToChuc: 1 });
 
     res.status(200).json(data);
   } catch (error) {

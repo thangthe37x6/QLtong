@@ -11,19 +11,19 @@
     <div class="max-w-4xl mx-auto  p-6 ">
       <div class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
+          <div class="mb-4">
             <label class="block mb-2 font-semibold text-gray-700">Từ ngày</label>
             <input type="date" id="tuNgay" name="tuNgay" required
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
-          <div>
+          <div class="mb-4">
             <label class="block mb-2 font-semibold text-gray-700">Đến ngày</label>
             <input type="date" id="denNgay" name="denNgay" required
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
-          <div>
-            <label class="block mb-2 font-semibold text-gray-700">Loại Hình HN</label>
-            <select id="loaiHinh" name="loaiHinh" required
+          <div class="mb-4">
+            <label class="block font-semibold mb-2">Loại Hình HN (chọn nhiều)</label>
+            <select id="dropdownLoaiHinh"
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="">-- Chọn loại hình --</option>
               <option value="HNCL Tiệc">HNCL tiệc</option>
@@ -34,7 +34,11 @@
               <option value="HN Boss">HN boss</option>
               <option value="HN Ra Mắt">HN ra mắt</option>
             </select>
+
+            <!-- Hiển thị các mục đã chọn -->
+            <div id="selectedLoaiHinh" class="flex flex-wrap gap-2 mt-3"></div>
           </div>
+
         </div>
 
         <div class="pt-4 text-center">
@@ -77,15 +81,13 @@
   async function fetchList() {
     const tuNgay = document.getElementById("tuNgay").value;
     const denNgay = document.getElementById("denNgay").value;
-    const loaiHinh = document.getElementById("loaiHinh").value;
-
+    const loaiHinh = Array.from(selectedLoaiHinhSet);
     if (!tuNgay || !denNgay || !loaiHinh) {
       alert("Vui lòng chọn đầy đủ thông tin lọc (từ ngày, đến ngày, loại hình)");
       return;
     }
 
-    const res = await fetch(`/api/PC?tuNgay=${tuNgay}&denNgay=${denNgay}&loaiHinh=${encodeURIComponent(loaiHinh)}`);
-    const data = await res.json();
+    const res = await fetch(`/api/PC?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&loaiHinh=${encodeURIComponent(loaiHinh.join(','))}`); const data = await res.json();
 
     const tbody = document.getElementById('conference-table');
 
@@ -172,4 +174,39 @@
   }
 
   fetchList();
+
+  const dropdownLoaiHinh = document.getElementById('dropdownLoaiHinh');
+  const selectedLoaiHinh = document.getElementById('selectedLoaiHinh');
+  const selectedLoaiHinhSet = new Set();
+
+  dropdownLoaiHinh.addEventListener('change', () => {
+    const value = dropdownLoaiHinh.value;
+    if (value && !selectedLoaiHinhSet.has(value)) {
+      selectedLoaiHinhSet.add(value);
+      renderLoaiHinh();
+    }
+  });
+
+  function renderLoaiHinh() {
+    selectedLoaiHinh.innerHTML = '';
+    selectedLoaiHinhSet.forEach(value => {
+      const div = document.createElement('div');
+      div.className = 'bg-gray-200 px-3 py-1 rounded-full flex items-center';
+
+      const span = document.createElement('span');
+      span.textContent = value;
+
+      const remove = document.createElement('span');
+      remove.textContent = '×';
+      remove.className = 'ml-2 text-red-500 cursor-pointer';
+      remove.onclick = () => {
+        selectedLoaiHinhSet.delete(value);
+        renderLoaiHinh();
+      };
+
+      div.appendChild(span);
+      div.appendChild(remove);
+      selectedLoaiHinh.appendChild(div);
+    });
+  }
 </script>
