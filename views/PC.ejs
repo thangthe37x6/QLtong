@@ -36,7 +36,7 @@
             </select>
 
             <!-- Hiển thị các mục đã chọn -->
-            <div id="selectedLoaiHinh" class="flex flex-wrap gap-2 mt-3"></div>
+            <div id="selectedLoaiHinh" class="flex flex-wrap gap-2 mt-6"></div>
           </div>
 
         </div>
@@ -88,7 +88,7 @@
     }
 
     const res = await fetch(`/api/PC?from=${encodeURIComponent(tuNgay)}&to=${encodeURIComponent(denNgay)}&loaiHinh=${encodeURIComponent(loaiHinh.join(','))}`);
-
+    const data = await res.json();
     const tbody = document.getElementById('conference-table');
 
     if (data.length === 0) {
