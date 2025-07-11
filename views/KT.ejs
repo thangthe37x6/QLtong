@@ -42,6 +42,8 @@
                 <th class="p-3">Địa điểm cụ thể</th>
                 <th class="p-3">Ngày tổ chức</th>
                 <th class="p-3">ADO</th>
+                <th class="p-3">Xe phụ trách</th>
+
                 <th class="p-3">SL khách hàng</th>
                 <th class="p-3">Ảnh KH</th>
                 <th class="p-3">Ảnh HN</th>
@@ -107,6 +109,7 @@
         <td class="p-3">${item.diaDiem || ""}</td>
         <td class="p-3">${item.ngayToChuc.replace(/^(\d{2})-(\d{2})-(\d{4})$/, '$2-$1-$3') || ""}</td>
         <td class="p-3">${item.username || ""}</td>
+        <td class="p-3">${item.PC || ""}</td>
         <td class="p-3">${item.SL || ""}</td>
         <td class="p-3">
           <img src="/uploads/${item.anhDanhSach}" class="h-20 w-auto rounded cursor-pointer" onclick="showImage('/uploads/${item.anhDanhSach}')" />

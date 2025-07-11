@@ -42,7 +42,7 @@
         </div>
 
         <div class="pt-4 text-center">
-          <button onclick="fetchList()"
+          <button type="button" onclick="fetchList()"
             class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-200 shadow-md">
             Lọc hội nghị
           </button>
@@ -82,12 +82,12 @@
     const tuNgay = document.getElementById("tuNgay").value;
     const denNgay = document.getElementById("denNgay").value;
     const loaiHinh = Array.from(selectedLoaiHinhSet);
-    if (!tuNgay || !denNgay || !loaiHinh) {
+    if (!tuNgay || !denNgay || loaiHinh.length === 0) {
       alert("Vui lòng chọn đầy đủ thông tin lọc (từ ngày, đến ngày, loại hình)");
       return;
     }
 
-    const res = await fetch(`/api/PC?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&loaiHinh=${encodeURIComponent(loaiHinh.join(','))}`); const data = await res.json();
+    const res = await fetch(`/api/PC?from=${encodeURIComponent(tuNgay)}&to=${encodeURIComponent(denNgay)}&loaiHinh=${encodeURIComponent(loaiHinh.join(','))}`);
 
     const tbody = document.getElementById('conference-table');
 
@@ -170,7 +170,7 @@
   async function deleteItem(id) {
     if (!confirm("Xác nhận xoá hội nghị?")) return;
     await fetch(`/PC/delete/${id}`, { method: 'POST' });
-    fetchList();
+    await fetchList();
   }
 
   fetchList();
@@ -197,8 +197,8 @@
       span.textContent = value;
 
       const remove = document.createElement('span');
-      remove.textContent = '×';
-      remove.className = 'ml-2 text-red-500 cursor-pointer';
+      remove.textContent = 'xóa';
+      remove.className = 'ml-3 text-base text-red-500 cursor-pointer';
       remove.onclick = () => {
         selectedLoaiHinhSet.delete(value);
         renderLoaiHinh();
