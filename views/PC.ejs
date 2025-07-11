@@ -62,6 +62,8 @@
                 <th class="p-3">Địa điểm cụ thể</th>
                 <th class="p-3">ADO</th>
                 <th class="p-3">Giờ đăng ký</th>
+                <th class="p-3">Loại hội nghị</th>
+
                 <th class="p-3">Xe phụ trách</th>
                 <th class="p-3">Hoạt động</th>
 
@@ -115,6 +117,7 @@
         ${renderEditableCell("diaDiem", item.diaDiem)}
         ${renderEditableCell("username", item.username)}
         <td class="p-3">${new Date(item.createdAt).toLocaleString('vi-VN')}</td>
+        <td class="p-3">${item.loaiHinh}</td>
         ${renderEditableCell("PC", item.PC ? item.PC : 'Nhập xe')}
         <td class="p-3 text-center">
           <button onclick="deleteItem('${item._id}')" class="text-red-600 hover:text-red-800 text-xl">xóa</button>

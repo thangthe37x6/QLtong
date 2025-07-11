@@ -26,7 +26,7 @@
               </option>
               <option value="Buổi tối">Buổi tối
               </option>
-              </select>
+            </select>
           </div>
 
           <!-- Ngày tổ chức -->
@@ -50,21 +50,21 @@
               </option>
               <option value="Gia Lộc">Gia Lộc
               </option>
-               <option value="Kim Thành">Kim Thành
+              <option value="Kim Thành">Kim Thành
               </option>
-               <option value="Kinh Môn">Kinh Môn
+              <option value="Kinh Môn">Kinh Môn
               </option>
-               <option value="Nam Sách">Nam Sách
+              <option value="Nam Sách">Nam Sách
               </option>
-               <option value="Ninh Giang">Ninh Giang
+              <option value="Ninh Giang">Ninh Giang
               </option>
-               <option value="Thanh Hà">Thanh Hà
+              <option value="Thanh Hà">Thanh Hà
               </option>
-               <option value="Thanh Miện">Thanh Miện
+              <option value="Thanh Miện">Thanh Miện
               </option>
-               <option value="Tứ Kỳ">Tứ Kỳ
+              <option value="Tứ Kỳ">Tứ Kỳ
               </option>
-               <option value="Chí Linh">Chí Linh
+              <option value="Chí Linh">Chí Linh
               </option>
             </select>
           </div>
@@ -73,7 +73,7 @@
             <select name="loaiHinh" required
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="">-- Chọn loại hình --</option>
-              <option value="HNCL Tiệc  ">HNCL tiệc 
+              <option value="HNCL Tiệc  ">HNCL tiệc
               </option>
               <option value="HNCL Quà">HNCL quà
               </option>
@@ -81,13 +81,13 @@
               </option>
               <option value="HN CS-01">HN CS-01
               </option>
-                 <option value="HN CS-02">HN CS-02
+              <option value="HN CS-02">HN CS-02
               </option>
               <option value="HN Boss">HN boss
               </option>
-               <option value="HN Ra Mắt">HN ra mắt
+              <option value="HN Ra Mắt">HN ra mắt
               </option>
-            
+
             </select>
           </div>
           <!-- Địa điểm cụ thể -->
@@ -98,9 +98,10 @@
           </div>
 
           <div class="mb-4">
-          <label class="block mb-2 font-semibold text-gray-700">Nhóm phụ trách</label>
-          <input name="nhomPhuTrach" required class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
+            <label class="block mb-2 font-semibold text-gray-700">Nhóm phụ trách</label>
+            <input name="nhomPhuTrach" required
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
           <!-- Ô trống giữ layout -->
           <div></div>
         </div>
@@ -125,7 +126,7 @@
                 <th class="p-3 text-left">Loại hình</th>
                 <th class="p-3 text-left">Ngày tổ chức</th>
                 <th class="p-3 text-left">VPKV tổ chức</th>
-                 <th class="p-3 text-left">Địa điểm</th>
+                <th class="p-3 text-left">Địa điểm</th>
                 <th class="p-3 text-center">Hành động</th>
               </tr>
             </thead>
@@ -134,7 +135,8 @@
         </div>
       </div>
     </div>
-    </main>
+  </main>
+
 </div>
 <script>
   async function fetchList() {
@@ -152,9 +154,9 @@
           ${renderEditableCell("diaDiem", item.ngayToChuc)}
           <td class="p-3">${item.huyenToChuc}</td>
           ${renderEditableCell("diaDiem", item.diaDiem)}
-          <td class="p-3 text-center">
-            <button onclick="deleteItem('${item._id}')" class="text-red-600 hover:text-red-800 text-xl">xóa</button>
-          </td>
+         <td class="p-3 text-center" style="display: ${item.PC ? 'none' : 'inline-block'};">
+        <button onclick="deleteItem('${item._id}')" class="text-red-600 hover:text-red-800 text-xl">xóa</button>
+      </td>
         </tr>
       `;
     });

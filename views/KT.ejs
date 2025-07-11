@@ -43,8 +43,8 @@
                 <th class="p-3">Ngày tổ chức</th>
                 <th class="p-3">ADO</th>
                 <th class="p-3">Xe phụ trách</th>
-
                 <th class="p-3">SL khách hàng</th>
+                <th class="p-3">Loại HN</th>
                 <th class="p-3">Ảnh KH</th>
                 <th class="p-3">Ảnh HN</th>
                 <th class="p-3">Ảnh HN2</th>
@@ -111,6 +111,7 @@
         <td class="p-3">${item.username || ""}</td>
         <td class="p-3">${item.PC || ""}</td>
         <td class="p-3">${item.SL || ""}</td>
+        <td class="p-3">${item.loaiHinh || ""}</td>
         <td class="p-3">
           <img src="/uploads/${item.anhDanhSach}" class="h-20 w-auto rounded cursor-pointer" onclick="showImage('/uploads/${item.anhDanhSach}')" />
         </td>
