@@ -26,13 +26,20 @@
             <select id="dropdownLoaiHinh"
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="">-- Chọn loại hình --</option>
-              <option value="HNCL Tiệc">HNCL tiệc</option>
-              <option value="HNCL Quà">HNCL quà</option>
-              <option value="HN nhóm chọn">HN nhóm chọn</option>
-              <option value="HN CS-01">HN CS-01</option>
-              <option value="HN CS-02">HN CS-02</option>
-              <option value="HN Boss">HN boss</option>
-              <option value="HN Ra Mắt">HN ra mắt</option>
+              <option value="HNCL Tiệc  ">HNCL tiệc
+              </option>
+              <option value="HNCL Quà">HNCL quà
+              </option>
+              <option value="HN nhóm chọn">HN nhóm chọn
+              </option>
+              <option value="HN CS-01">HN CS-01
+              </option>
+              <option value="HN CS-02">HN CS-02
+              </option>
+              <option value="HN Boss">HN boss
+              </option>
+              <option value="HN Ra Mắt">HN ra mắt
+              </option>
             </select>
 
             <!-- Hiển thị các mục đã chọn -->
@@ -175,12 +182,12 @@
     await fetch(`/PC/delete/${id}`, { method: 'POST' });
     await fetchList();
   }
-
-  fetchList();
-
   const dropdownLoaiHinh = document.getElementById('dropdownLoaiHinh');
   const selectedLoaiHinh = document.getElementById('selectedLoaiHinh');
   const selectedLoaiHinhSet = new Set();
+
+  fetchList();
+
 
   dropdownLoaiHinh.addEventListener('change', () => {
     const value = dropdownLoaiHinh.value;

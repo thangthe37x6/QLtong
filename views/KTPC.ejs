@@ -11,14 +11,18 @@
       <div class="bg-white shadow-md rounded-2xl p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
         <div class="mb-4">
           <label class="block mb-2 font-semibold text-gray-700">Từ ngày </label>
-          <div >
-            <input type="date" id="tuNgay" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+          <div>
+            <input type="date" id="tuNgay"
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required />
 
           </div>
           <label class="block mb-2 font-semibold text-gray-700">Dến ngày </label>
-          <div >
+          <div>
 
-            <input type="date" id="denNgay" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+            <input type="date" id="denNgay"
+              class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required />
           </div>
 
           <div class="mb-4">
@@ -26,13 +30,20 @@
             <select id="dropdownLoaiHinh"
               class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="">-- Chọn loại hình --</option>
-              <option value="HNCL Tiệc">HNCL tiệc</option>
-              <option value="HNCL Quà">HNCL quà</option>
-              <option value="HN nhóm chọn">HN nhóm chọn</option>
-              <option value="HN CS-01">HN CS-01</option>
-              <option value="HN CS-02">HN CS-02</option>
-              <option value="HN Boss">HN boss</option>
-              <option value="HN Ra Mắt">HN ra mắt</option>
+              <option value="HNCL Tiệc  ">HNCL tiệc
+              </option>
+              <option value="HNCL Quà">HNCL quà
+              </option>
+              <option value="HN nhóm chọn">HN nhóm chọn
+              </option>
+              <option value="HN CS-01">HN CS-01
+              </option>
+              <option value="HN CS-02">HN CS-02
+              </option>
+              <option value="HN Boss">HN boss
+              </option>
+              <option value="HN Ra Mắt">HN ra mắt
+              </option>
             </select>
 
             <!-- Hiển thị các mục đã chọn -->
@@ -79,7 +90,9 @@
   const btnLoc = document.getElementById('btnLoc');
   const bangHoiNghi = document.getElementById('bangHoiNghi');
   const bodyHoiNghi = document.getElementById('bodyHoiNghi');
-
+  const dropdownLoaiHinh = document.getElementById('dropdownLoaiHinh');
+  const selectedLoaiHinh = document.getElementById('selectedLoaiHinh');
+  const selectedLoaiHinhSet = new Set();
   btnLoc.addEventListener('click', async () => {
     const from = tuNgay.value;
     const to = denNgay.value;
@@ -129,9 +142,7 @@
     }
   });
 
-  const dropdownLoaiHinh = document.getElementById('dropdownLoaiHinh');
-  const selectedLoaiHinh = document.getElementById('selectedLoaiHinh');
-  const selectedLoaiHinhSet = new Set();
+
 
   dropdownLoaiHinh.addEventListener('change', () => {
     const value = dropdownLoaiHinh.value;
@@ -153,7 +164,7 @@
       const remove = document.createElement('span');
       remove.textContent = 'xóa';
       remove.className = 'ml-3 text-base text-red-500 cursor-pointer';
-      
+
       remove.onclick = () => {
         selectedLoaiHinhSet.delete(value);
         renderLoaiHinh();

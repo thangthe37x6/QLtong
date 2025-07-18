@@ -36,7 +36,7 @@ routerMainUser.get('/DKHN', authMiddleware, async (req, res) => {
       data = (await conferenceData.find({ username: username }).lean())
         .sort((a, b) => new Date(a.ngayToChuc) - new Date(b.ngayToChuc));
     }
-
+    
     res.status(200).render("DKHN", { data, role: role, username: req.user.username });
   } catch (error) {
     console.error('Lỗi khi lấy danh sách hội nghị:', error);
@@ -309,12 +309,13 @@ routerMainUser.get("/api/KTPC", authMiddleware, async (req, res) => {
 
   try {
     const loaiHinhArr = loaiHinh.split(',');
+    console.log(loaiHinhArr)
     const result = await conferenceData.find({
       ngayToChuc: { $gte: from, $lte: to },
-      loaiHinh: { $in: loaiHinhArr }
+      loaiHinh: { $in: loaiHinhArr.map(h => new RegExp(`^${h}$`, 'i')) }
     });
 
-    res.json(result);
+    res.status(200).json(result);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Không thể lấy dữ liệu' });

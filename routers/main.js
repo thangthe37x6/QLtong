@@ -4,9 +4,8 @@ import conferenceData from "../models/modelmain.js";
 import fs from 'fs'
 import path from 'path';
 import ExcelJS from 'exceljs'
-
-
 const routermain = express.Router()
+
 routermain.get("/PC", authMiddleware, requireAdmin, async (req, res) => {
   try {
     const role = req.user.role;
@@ -21,17 +20,17 @@ routermain.get("/PC", authMiddleware, requireAdmin, async (req, res) => {
   }
 });
 
-routermain.get('/api/PC', authMiddleware, requireAdmin, async (req, res) => {
+routermain.get('/api/PC', authMiddleware,requireAdmin,  async (req, res) => {
   try {
     const { from, to, loaiHinh } = req.query;
     if (!from || !to || !loaiHinh) {
       return res.status(400).json({ error: 'Thiếu from, to hoặc loaiHinh' });
     }
     const loaiHinhArr = loaiHinh.split(','); // biến thành mảng
-
+    console.log(loaiHinhArr)
     const data = await conferenceData.find({
       ngayToChuc: { $gte: from, $lte: to },
-      loaiHinh: { $in: loaiHinhArr }
+      loaiHinh: { $in: loaiHinhArr.map(h => new RegExp(`^${h}$`, 'i')) }
     });
 
 
@@ -41,7 +40,7 @@ routermain.get('/api/PC', authMiddleware, requireAdmin, async (req, res) => {
     res.status(500).json({ error: 'Không thể lấy danh sách hội nghị' });
   }
 });
-routermain.post('/PC/update/:id', authMiddleware, requireAdmin, async (req, res) => {
+routermain.post('/PC/update/:id', authMiddleware,requireAdmin,  async (req, res) => {
   try {
     const updatedConference = await conferenceData.findByIdAndUpdate(
       req.params.id,
@@ -60,7 +59,7 @@ routermain.post('/PC/update/:id', authMiddleware, requireAdmin, async (req, res)
   }
 });
 
-routermain.post('/PC/delete/:id', authMiddleware, requireAdmin, async (req, res) => {
+routermain.post('/PC/delete/:id', authMiddleware,requireAdmin,  async (req, res) => {
   try {
     // 1. Tìm hội nghị trước khi xóa
     const conference = await conferenceData.findById(req.params.id);
@@ -113,7 +112,7 @@ routermain.get("/KT", authMiddleware, requireAdmin, (req, res) => {
   }
 });
 // [GET] API: Trả về danh sách hội nghị theo ngày tổ chức
-routermain.get('/api/KT', authMiddleware, requireAdmin, async (req, res) => {
+routermain.get('/api/KT', authMiddleware, requireAdmin,  async (req, res) => {
   try {
     const { from, to } = req.query;
 
@@ -136,7 +135,7 @@ routermain.get('/api/KT', authMiddleware, requireAdmin, async (req, res) => {
     res.status(500).json({ error: 'Lỗi máy chủ.' });
   }
 });
-routermain.post("/KT/PD", authMiddleware, requireAdmin, async (req, res) => {
+routermain.post("/KT/PD", authMiddleware,requireAdmin, async (req, res) => {
   try {
     const { idHoiNghi, ghiChu } = req.body;
 
@@ -161,7 +160,7 @@ routermain.post("/KT/PD", authMiddleware, requireAdmin, async (req, res) => {
 });
 
 // ------------------------------------------------------------------------------------------------------------------
-routermain.get('/TK', authMiddleware, requireAdmin, async (req, res) => {
+routermain.get('/TK', authMiddleware,requireAdmin,  async (req, res) => {
   try {
     const role = req.user.role
     res.status(200).render('TK', { data: null, chartData: null, role: role, username: req.user.username });
@@ -172,7 +171,7 @@ routermain.get('/TK', authMiddleware, requireAdmin, async (req, res) => {
 
 });
 
-routermain.post('/TK', authMiddleware, requireAdmin, async (req, res) => {
+routermain.post('/TK', authMiddleware,async (req, res) => {
   try {
     const role = req.user.role
     const { fromDate, toDate, trangThai } = req.body;
@@ -252,7 +251,7 @@ routermain.post('/TK', authMiddleware, requireAdmin, async (req, res) => {
   }
 
 });
-routermain.get('/export', authMiddleware, requireAdmin, async (req, res) => {
+routermain.get('/export', authMiddleware,requireAdmin, async (req, res) => {
   const { from, to } = req.query;
   const data = await conferenceData.find({
     ngayToChuc: { $gte: from, $lte: to }
